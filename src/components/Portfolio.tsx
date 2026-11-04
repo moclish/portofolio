@@ -21,13 +21,26 @@ export const Portfolio: React.FC = () => {
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
-  // Otomatis mengurutkan dari portofolio terbaru ke yang lama (tahun terbesar, lalu ID terbesar)
+  // Otomatis mengurutkan dari portofolio terbaru ke yang lama:
+  // 1. Berdasarkan tanggal resmi (date) dengan presisi hari/bulan
+  // 2. Fallback ke tahun (year) jika tanggal tidak lengkap
+  // 3. Jika tahun & tanggal sama, menggunakan ID terbesar
   const sortedPortfolio = useMemo(() => {
     return [...PORTFOLIO_DATA].sort((a, b) => {
-      const yearA = parseInt(a.year, 10) || 0;
-      const yearB = parseInt(b.year, 10) || 0;
-      if (yearB !== yearA) {
-        return yearB - yearA;
+      const getTime = (item: PortfolioItem) => {
+        if (item.date) {
+          const parsed = new Date(item.date).getTime();
+          if (!isNaN(parsed)) return parsed;
+        }
+        const parsedYear = parseInt(item.year, 10) || 0;
+        return new Date(`${parsedYear}-01-01`).getTime();
+      };
+
+      const timeA = getTime(a);
+      const timeB = getTime(b);
+
+      if (timeB !== timeA) {
+        return timeB - timeA;
       }
       return b.id - a.id;
     });
@@ -177,11 +190,11 @@ export const Portfolio: React.FC = () => {
                         />
                       </div>
 
-                      {/* Year badge */}
+                      {/* Year / Date badge */}
                       <span
                         className={`absolute top-4 right-4 ${item.yearBadgeClass} text-[10px] font-extrabold px-3 py-1 rounded-full shadow-sm z-20`}
                       >
-                        {item.year}
+                        {item.dateLabel || item.year}
                       </span>
 
                       {/* Hover action hint */}
@@ -259,7 +272,7 @@ export const Portfolio: React.FC = () => {
                   {selectedItem.categoryLabel}
                 </span>
                 <span className="text-xs text-gray-500 font-medium">
-                  {selectedItem.organizer} • {selectedItem.year}
+                  {selectedItem.organizer} • {selectedItem.dateLabel || selectedItem.year}
                 </span>
               </div>
               <button

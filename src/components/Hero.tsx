@@ -92,23 +92,47 @@ export const Hero: React.FC = () => {
 
               <div className="relative bg-white p-6 sm:p-8 rounded-3xl shadow-2xl border border-emerald-50 space-y-6">
                 <div className="text-center relative">
-                  <div className="w-36 h-36 mx-auto rounded-full bg-gradient-to-tr from-brand-600 via-emerald-500 to-sunshine-400 p-1.5 shadow-xl relative">
-                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden">
+                  {/* Symmetrical, aesthetic avatar with hair-safe crop and right-click protection */}
+                  <div
+                    className="w-36 h-36 sm:w-44 sm:h-44 mx-auto rounded-full bg-gradient-to-tr from-brand-600 via-emerald-500 to-sunshine-400 p-1.5 sm:p-2 shadow-2xl relative select-none group"
+                    onContextMenu={(e) => e.preventDefault()}
+                  >
+                    <div
+                      className="w-full h-full rounded-full bg-white flex items-center justify-center overflow-hidden relative ring-2 ring-white/90 shadow-inner"
+                      onContextMenu={(e) => e.preventDefault()}
+                    >
                       {formattedPhotoUrl && !photoError ? (
-                        <img
-                          src={formattedPhotoUrl}
-                          alt={PROFILE_INFO.name}
-                          onError={() => setPhotoError(true)}
-                          className="w-full h-full object-cover rounded-full"
-                        />
+                        <>
+                          <img
+                            src={formattedPhotoUrl}
+                            alt={PROFILE_INFO.name}
+                            onError={() => setPhotoError(true)}
+                            draggable={false}
+                            onContextMenu={(e) => e.preventDefault()}
+                            className="w-full h-full object-cover rounded-full select-none pointer-events-none transition-transform duration-500 group-hover:scale-105"
+                            style={{
+                              objectPosition: '50% 12%',
+                              WebkitTouchCallout: 'none',
+                              WebkitUserSelect: 'none',
+                              userSelect: 'none',
+                            }}
+                          />
+                          {/* Invisible shield to completely block right-click, context menu, and tap-and-hold downloads */}
+                          <div
+                            className="absolute inset-0 z-10 rounded-full bg-transparent select-none cursor-default"
+                            onContextMenu={(e) => e.preventDefault()}
+                            style={{ WebkitTouchCallout: 'none', userSelect: 'none' }}
+                            aria-hidden="true"
+                          />
+                        </>
                       ) : (
-                        <div className="w-full h-full bg-emerald-50 flex flex-col items-center justify-center text-brand-700">
-                          <i className="fa-solid fa-user-tie text-5xl mb-1"></i>
+                        <div className="w-full h-full bg-emerald-50 flex flex-col items-center justify-center text-brand-700 select-none">
+                          <i className="fa-solid fa-user-tie text-5xl sm:text-6xl mb-1"></i>
                         </div>
                       )}
                     </div>
                     <span
-                      className="absolute bottom-2 right-2 bg-sunshine-500 text-white p-2 rounded-full shadow border-2 border-white text-xs"
+                      className="absolute bottom-1.5 sm:bottom-2 right-1.5 sm:right-2 z-20 bg-gradient-to-br from-sunshine-400 to-sunshine-600 text-white p-2 sm:p-2.5 rounded-full shadow-lg border-2 border-white text-xs sm:text-sm flex items-center justify-center transition-transform hover:scale-110"
                       title="Gemini Certified Educator 2026"
                     >
                       <i className="fa-solid fa-wand-magic-sparkles"></i>

@@ -13,6 +13,8 @@ export interface PortfolioItem {
   categoryBadgeClass: string;
   organizer: string;
   year: string;
+  date?: string; // Format ISO: 'YYYY-MM-DD' atau 'YYYY-MM' untuk urutan presisi
+  dateLabel?: string; // Tampilan label yang ramah dibaca, misal 'Okt 2026'
   yearBadgeClass: string;
   description: string;
   imageUrl: string;

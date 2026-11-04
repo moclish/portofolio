@@ -10,6 +10,12 @@ import { PortfolioItem } from '../types/portfolio';
  * ----------------------------------------------------
  * Anda cukup menduplikasi salah satu objek di bawah ini.
  *
+ * PENGURUTAN OTOMATIS:
+ * - Gunakan field `date` (format: 'YYYY-MM-DD', misal: '2026-10-24').
+ * - Sistem akan otomatis mengurutkan dari tanggal paling baru ke paling lama,
+ *   bahkan jika beberapa sertifikat diterbitkan pada tahun yang sama.
+ * - Opsional: field `dateLabel` (misal: 'Okt 2026') untuk tampilan teks bulan & tahun di badge.
+ *
  * OPSI SUMBER GAMBAR (imageUrl):
  * 1. Google Drive:
  *    - Masukkan link sharing Google Drive (Pastikan izin: "Siapa saja yang memiliki link dapat melihat"):
@@ -28,6 +34,8 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
     categoryBadgeClass: 'bg-amber-100 text-amber-700',
     organizer: 'Pusbangkom',
     year: '2026',
+    date: '2026-02-10',
+    dateLabel: 'Feb 2026',
     yearBadgeClass: 'bg-emerald-600 text-white',
     description:
       'Sertifikasi kompetensi Santri Mahir Artificial Intelligence yang mencakup pemahaman dasar AI, penerapan AI dalam pendidikan, dan pengembangan keterampilan digital.',
@@ -43,6 +51,8 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
     categoryBadgeClass: 'bg-blue-100 text-blue-700',
     organizer: 'Websis For Edu',
     year: '2026',
+    date: '2026-05-18',
+    dateLabel: 'Mei 2026',
     yearBadgeClass: 'bg-emerald-600 text-white',
     description:
       'Pelatihan kompetensi Bangun Portofolio Digital bagi guru dan pendidik untuk meningkatkan kemampuan digital dalam menyusun portofolio profesional.',
@@ -58,6 +68,8 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
     categoryBadgeClass: 'bg-amber-100 text-amber-700',
     organizer: 'Google Education',
     year: '2026',
+    date: '2026-10-24',
+    dateLabel: 'Okt 2026',
     yearBadgeClass: 'bg-emerald-600 text-white',
     description:
       'Sertifikasi kompetensi integrasi Artificial Intelligence (AI Gemini) dalam menyusun modul ajar, evaluasi otomatis, serta efisiensi KBM.',
@@ -73,6 +85,8 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
     categoryBadgeClass: 'bg-emerald-100 text-brand-700',
     organizer: 'Kementerian Agama',
     year: '2024',
+    date: '2024-08-15',
+    dateLabel: 'Agu 2024',
     yearBadgeClass: 'bg-brand-600 text-white',
     description:
       'Pendalaman teknik pengajaran ilmu Faroid interaktif menggunakan pendekatan studi kasus praktis bagi pendidik madrasah aliyah.',
@@ -89,6 +103,8 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
     categoryBadgeClass: 'bg-emerald-100 text-brand-700',
     organizer: 'MAS Al Furqon',
     year: '2023',
+    date: '2023-11-01',
+    dateLabel: 'Nov 2023',
     yearBadgeClass: 'bg-brand-600 text-white',
     description:
       'Panduan belajar mandiri santri dalam memahami pembagian harta warisan secara cepat dilengkapi tabel bagian utuh dan studi kasus.',
@@ -105,6 +121,8 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
     categoryBadgeClass: 'bg-blue-100 text-blue-700',
     organizer: 'Balai Diklat Keagamaan',
     year: '2022',
+    date: '2022-06-20',
+    dateLabel: 'Jun 2022',
     yearBadgeClass: 'bg-blue-600 text-white',
     description:
       'Pelatihan peningkatan kompetensi pedagogik guru dalam merancang metode KBM yang menyenangkan dan inklusif.',
