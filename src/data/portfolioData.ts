@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { PortfolioItem } from '../types/portfolio';
+import { PortfolioItem } from "../types/portfolio";
 
 /**
  * PANDUAN MENAMBAHKAN PORTOFOLIO / SERTIFIKAT BARU:
@@ -24,111 +24,109 @@ import { PortfolioItem } from '../types/portfolio';
  * 2. File Lokal di Proyek Anda (Paling direkomendasikan & paling cepat):
  *    - Simpan file foto/scan di folder `public/portfolio/nama-file.jpg`
  *    - Masukkan path: '/portfolio/nama-file.jpg'
+ *
  */
 export const PORTFOLIO_DATA: PortfolioItem[] = [
   {
     id: 1,
-    title: 'Santri Mahir Artificial Intelligence',
-    category: 'sertifikat',
-    categoryLabel: 'Sertifikasi',
-    categoryBadgeClass: 'bg-amber-100 text-amber-700',
-    organizer: 'Pusbangkom',
-    year: '2026',
-    date: '2026-02-10',
-    dateLabel: 'Feb 2026',
-    yearBadgeClass: 'bg-emerald-600 text-white',
+    title: "Santri Mahir Artificial Intelligence",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Pusbangkom",
+    year: "2026",
+    date: "2026-10-26",
+    dateLabel: "Okt 2026",
+    yearBadgeClass: "bg-emerald-600 text-white",
     description:
-      'Sertifikasi kompetensi Santri Mahir Artificial Intelligence yang mencakup pemahaman dasar AI, penerapan AI dalam pendidikan, dan pengembangan keterampilan digital.',
-    imageUrl: '1ogrPUshX6ktGkXDPLf41d2uX08xO85F3',
+      "Sertifikasi kompetensi yang mencakup pemahaman dasar AI, penerapan AI dalam pendidikan, dan pengembangan keterampilan digital.",
+    imageUrl: "1ogrPUshX6ktGkXDPLf41d2uX08xO85F3",
     fallbackUrl:
-      'https://placehold.co/600x450/f0fdf4/047857?text=Santri+Mahir+AI+2026',
+      "https://placehold.co/600x450/f0fdf4/047857?text=Santri+Mahir+AI+2026",
   },
   {
     id: 2,
-    title: 'Bangun Portofolio Digital',
-    category: 'akademik',
-    categoryLabel: 'Pelatihan',
-    categoryBadgeClass: 'bg-blue-100 text-blue-700',
-    organizer: 'Websis For Edu',
-    year: '2026',
-    date: '2026-05-18',
-    dateLabel: 'Mei 2026',
-    yearBadgeClass: 'bg-emerald-600 text-white',
+    title: "Bangun Portofolio Digital",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Websis For Edu",
+    year: "2026",
+    date: "2026-10-30",
+    dateLabel: "Okt 2026",
+    yearBadgeClass: "bg-emerald-600 text-white",
     description:
-      'Pelatihan kompetensi Bangun Portofolio Digital bagi guru dan pendidik untuk meningkatkan kemampuan digital dalam menyusun portofolio profesional.',
-    imageUrl: '1qr2vjNzCT9YRGryA5F_5e4o_3PiyiDMO',
+      "Pelatihan kompetensi Bangun Portofolio Digital bagi guru dan pendidik untuk meningkatkan kemampuan digital dalam menyusun portofolio profesional.",
+    imageUrl: "1qr2vjNzCT9YRGryA5F_5e4o_3PiyiDMO",
     fallbackUrl:
-      'https://placehold.co/600x450/eff6ff/1d4ed8?text=Portofolio+Digital+2026',
+      "https://placehold.co/600x450/eff6ff/1d4ed8?text=Portofolio+Digital+2026",
   },
   {
     id: 3,
-    title: 'Certified Gemini Educator',
-    category: 'sertifikat',
-    categoryLabel: 'Sertifikasi',
-    categoryBadgeClass: 'bg-amber-100 text-amber-700',
-    organizer: 'Google Education',
-    year: '2026',
-    date: '2026-10-24',
-    dateLabel: 'Okt 2026',
-    yearBadgeClass: 'bg-emerald-600 text-white',
+    title: "Certified Gemini Educator",
+    category: "sertifikat",
+    categoryLabel: "Sertifikasi",
+    categoryBadgeClass: "bg-emerald-100 text-emerald-700",
+    organizer: "Google Education",
+    year: "2026",
+    date: "2026-10-19",
+    dateLabel: "Okt 2026",
+    yearBadgeClass: "bg-emerald-600 text-white",
     description:
-      'Sertifikasi kompetensi integrasi Artificial Intelligence (AI Gemini) dalam menyusun modul ajar, evaluasi otomatis, serta efisiensi KBM.',
-    imageUrl: '1a48rEi_qDjOJMlc-lHMYVIc_glRk_MVt',
+      "Sertifikasi kompetensi integrasi Artificial Intelligence (AI Gemini) dalam menyusun modul ajar, evaluasi otomatis, serta efisiensi KBM.",
+    imageUrl: "1a48rEi_qDjOJMlc-lHMYVIc_glRk_MVt",
     fallbackUrl:
-      'https://placehold.co/600x450/fef3c7/d97706?text=Gemini+Educator+2026',
+      "https://placehold.co/600x450/fef3c7/d97706?text=Gemini+Educator+2026",
   },
   {
     id: 4,
-    title: 'Workshop Metodologi Fikih Mawaris Modern',
-    category: 'faroid',
-    categoryLabel: 'Pelatihan Fikih',
-    categoryBadgeClass: 'bg-emerald-100 text-brand-700',
-    organizer: 'Kementerian Agama',
-    year: '2024',
-    date: '2024-08-15',
-    dateLabel: 'Agu 2024',
-    yearBadgeClass: 'bg-brand-600 text-white',
+    title: "Berbagi Cerita Inovasi Madrasah",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Pusbangkom",
+    year: "2024",
+    date: "2024-05-17",
+    dateLabel: "Mei 2024",
+    yearBadgeClass: "bg-brand-600 text-white",
     description:
-      'Pendalaman teknik pengajaran ilmu Faroid interaktif menggunakan pendekatan studi kasus praktis bagi pendidik madrasah aliyah.',
-    imageUrl:
-      'https://placehold.co/600x450/dcfce7/059669?text=Pelatihan+Faroid+2024',
+      "Pelatihan kompetensi guru dalam menyusun inovasi pembelajaran berbasis AI, serta berbagi pengalaman dan praktik terbaik di madrasah.",
+    imageUrl: "1HiIlNMt_dtvfn826-15QrwDpnRXXmISU",
     fallbackUrl:
-      'https://placehold.co/600x450/dcfce7/059669?text=Pelatihan+Faroid+2024',
+      "https://placehold.co/600x450/dcfce7/059669?text=Pelatihan+Faroid+2024",
   },
   {
     id: 5,
-    title: 'Buku Saku Fikih Waris Ringkas',
-    category: 'faroid',
-    categoryLabel: 'Buku & Modul',
-    categoryBadgeClass: 'bg-emerald-100 text-brand-700',
-    organizer: 'MAS Al Furqon',
-    year: '2023',
-    date: '2023-11-01',
-    dateLabel: 'Nov 2023',
-    yearBadgeClass: 'bg-brand-600 text-white',
+    title: "Anti Bullying di Sekolah",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Pusbangkom",
+    year: "2024",
+    date: "2024-05-03",
+    dateLabel: "Mei 2024",
+    yearBadgeClass: "bg-brand-600 text-white",
     description:
-      'Panduan belajar mandiri santri dalam memahami pembagian harta warisan secara cepat dilengkapi tabel bagian utuh dan studi kasus.',
-    imageUrl:
-      'https://placehold.co/600x450/dcfce7/047857?text=Modul+Buku+Saku+2023',
+      "Pelatihan kompetensi guru dalam mengenali dan menangani kasus bullying serta kekerasan di lingkungan sekolah.",
+    imageUrl: "1HMg0h7QSveR0FbffHLf9gjBWqxJKm1HR",
     fallbackUrl:
-      'https://placehold.co/600x450/dcfce7/047857?text=Modul+Buku+Saku+2023',
+      "https://placehold.co/600x450/dcfce7/047857?text=Modul+Buku+Saku+2023",
   },
   {
     id: 6,
-    title: 'Sertifikat Strategi Pembelajaran Kreatif',
-    category: 'sertifikat',
-    categoryLabel: 'Pelatihan Guru',
-    categoryBadgeClass: 'bg-blue-100 text-blue-700',
-    organizer: 'Balai Diklat Keagamaan',
-    year: '2022',
-    date: '2022-06-20',
-    dateLabel: 'Jun 2022',
-    yearBadgeClass: 'bg-blue-600 text-white',
+    title: "Sertifikasi TOAFL",
+    category: "sertifikat",
+    categoryLabel: "Sertifikasi",
+    categoryBadgeClass: "bg-emerald-100 text-emerald-700",
+    organizer: "Al-Azhar",
+    year: "2021",
+    date: "2021-04-11",
+    dateLabel: "Apr 2021",
+    yearBadgeClass: "bg-emerald-600 text-white",
     description:
-      'Pelatihan peningkatan kompetensi pedagogik guru dalam merancang metode KBM yang menyenangkan dan inklusif.',
-    imageUrl:
-      'https://placehold.co/600x450/dbeafe/1d4ed8?text=Sertifikat+Pedagogik+2022',
+      "Sertifikasi kompetensi bahasa Arab berdasarkan standar TOAFL yang diselenggarakan oleh Kursus Bahasa Arab Al-Azhar Kediri.",
+    imageUrl: "1kktbnLyY2Q-lOB4Xvqp2GYdf5GkKiTfJ",
     fallbackUrl:
-      'https://placehold.co/600x450/dbeafe/1d4ed8?text=Sertifikat+Pedagogik+2022',
+      "https://placehold.co/600x450/dbeafe/1d4ed8?text=Sertifikat+Pedagogik+2022",
   },
 ];

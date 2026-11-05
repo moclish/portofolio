@@ -3,21 +3,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
-import type { Swiper as SwiperType } from 'swiper';
-import { PORTFOLIO_DATA } from '../data/portfolioData';
-import { PortfolioCategory, PortfolioItem } from '../types/portfolio';
-import { formatPortfolioImageUrl } from '../utils/imageHelper';
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Navigation, Pagination } from "swiper/modules";
+import type { Swiper as SwiperType } from "swiper";
+import { PORTFOLIO_DATA } from "../data/portfolioData";
+import { PortfolioCategory, PortfolioItem } from "../types/portfolio";
+import { formatPortfolioImageUrl } from "../utils/imageHelper";
 
 // Swiper core styles
-import 'swiper/css';
-import 'swiper/css/navigation';
-import 'swiper/css/pagination';
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 
 export const Portfolio: React.FC = () => {
-  const [activeFilter, setActiveFilter] = useState<PortfolioCategory>('all');
+  const [activeFilter, setActiveFilter] = useState<PortfolioCategory>("all");
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
   const swiperRef = useRef<SwiperType | null>(null);
 
@@ -47,7 +47,7 @@ export const Portfolio: React.FC = () => {
   }, []);
 
   const filteredPortfolio = useMemo(() => {
-    if (activeFilter === 'all') return sortedPortfolio;
+    if (activeFilter === "all") return sortedPortfolio;
     return sortedPortfolio.filter((item) => item.category === activeFilter);
   }, [activeFilter, sortedPortfolio]);
 
@@ -61,12 +61,12 @@ export const Portfolio: React.FC = () => {
   // Close modal on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
+      if (e.key === "Escape") {
         setSelectedItem(null);
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   return (
@@ -80,49 +80,42 @@ export const Portfolio: React.FC = () => {
             Portofolio & Sertifikasi
           </h2>
           <p className="text-gray-600 mt-2 text-sm">
-            Kumpulan sertifikasi profesional, karya, dan dokumentasi program
-            edukatif (otomatis terurut dari yang terbaru)
+            Kumpulan sertifikasi profesional, karya, dan pelatihan program
+            edukatif
           </p>
         </div>
 
         {/* Filter Buttons */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10" id="filterContainer">
+        <div
+          className="flex flex-wrap justify-center gap-2 mb-10"
+          id="filterContainer"
+        >
           <button
-            onClick={() => setActiveFilter('all')}
+            onClick={() => setActiveFilter("all")}
             className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              activeFilter === 'all'
-                ? 'bg-brand-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              activeFilter === "all"
+                ? "bg-brand-600 text-white shadow-md"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            Semua Items
+            Semua
           </button>
           <button
-            onClick={() => setActiveFilter('sertifikat')}
+            onClick={() => setActiveFilter("sertifikat")}
             className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              activeFilter === 'sertifikat'
-                ? 'bg-brand-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              activeFilter === "sertifikat"
+                ? "bg-brand-600 text-white shadow-md"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Sertifikasi
           </button>
           <button
-            onClick={() => setActiveFilter('faroid')}
+            onClick={() => setActiveFilter("akademik")}
             className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              activeFilter === 'faroid'
-                ? 'bg-brand-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Fikih Waris
-          </button>
-          <button
-            onClick={() => setActiveFilter('akademik')}
-            className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              activeFilter === 'akademik'
-                ? 'bg-brand-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              activeFilter === "akademik"
+                ? "bg-brand-600 text-white shadow-md"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
             Akademik
@@ -140,11 +133,11 @@ export const Portfolio: React.FC = () => {
             grabCursor={true}
             pagination={{
               clickable: true,
-              el: '.swiper-custom-pagination',
+              el: ".swiper-custom-pagination",
             }}
             navigation={{
-              nextEl: '.swiper-button-custom-next',
-              prevEl: '.swiper-button-custom-prev',
+              nextEl: ".swiper-button-custom-next",
+              prevEl: ".swiper-button-custom-prev",
             }}
             breakpoints={{
               320: { slidesPerView: 1, slidesPerGroup: 1, spaceBetween: 16 },
@@ -200,7 +193,8 @@ export const Portfolio: React.FC = () => {
                       {/* Hover action hint */}
                       <div className="absolute inset-0 bg-emerald-950/20 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20">
                         <span className="bg-white/95 text-brand-800 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                          <i className="fa-regular fa-eye"></i> Pratinjau Dokumen
+                          <i className="fa-regular fa-eye"></i> Pratinjau
+                          Dokumen
                         </span>
                       </div>
                     </div>
@@ -272,7 +266,8 @@ export const Portfolio: React.FC = () => {
                   {selectedItem.categoryLabel}
                 </span>
                 <span className="text-xs text-gray-500 font-medium">
-                  {selectedItem.organizer} • {selectedItem.dateLabel || selectedItem.year}
+                  {selectedItem.organizer} •{" "}
+                  {selectedItem.dateLabel || selectedItem.year}
                 </span>
               </div>
               <button
