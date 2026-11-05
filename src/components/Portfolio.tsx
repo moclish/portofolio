@@ -70,8 +70,12 @@ export const Portfolio: React.FC = () => {
   }, []);
 
   return (
-    <section id="portofolio" className="py-20 bg-white relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="portofolio" className="py-20 bg-warmbg relative overflow-hidden scroll-mt-[5px] border-t border-emerald-100/60">
+      {/* Decorative ambient background accents */}
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-brand-100/30 via-emerald-50/15 to-transparent pointer-events-none rounded-full blur-3xl -z-0" />
+      <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-sunshine-400/10 rounded-full blur-3xl pointer-events-none -z-0" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-brand-600 font-bold text-sm uppercase tracking-wider bg-brand-50 px-4 py-1.5 rounded-full border border-brand-100">
             Rekam Jejak
@@ -92,7 +96,7 @@ export const Portfolio: React.FC = () => {
             className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
               activeFilter === 'all'
                 ? 'bg-brand-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200/80 shadow-2xs'
             }`}
           >
             Semua Items
@@ -102,7 +106,7 @@ export const Portfolio: React.FC = () => {
             className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
               activeFilter === 'sertifikat'
                 ? 'bg-brand-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200/80 shadow-2xs'
             }`}
           >
             Sertifikasi
@@ -112,7 +116,7 @@ export const Portfolio: React.FC = () => {
             className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
               activeFilter === 'faroid'
                 ? 'bg-brand-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200/80 shadow-2xs'
             }`}
           >
             Fikih Waris
@@ -122,7 +126,7 @@ export const Portfolio: React.FC = () => {
             className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
               activeFilter === 'akademik'
                 ? 'bg-brand-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200/80 shadow-2xs'
             }`}
           >
             Akademik

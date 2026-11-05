@@ -34,9 +34,15 @@ export const PROFILE_INFO = {
   whatsappDisplay: '+62 822-5080-3144',
   email: 'sadono@madrasah.kemenag.go.id',
   facebookUrl: 'https://facebook.com/moclish',
+  facebookFollowers: '1.8K+ Pengikut',
   instagramUrl: 'https://instagram.com/sadonox',
+  instagramFollowers: '3.5K+ Pengikut',
   // Foto Profil: Bisa pakai path lokal (cth: '/foto-profil.jpg') atau link/ID Google Drive
-  photoUrl: '1u31jBVyshSC3IiSNAXir06ERDRd3EyNJ', 
+  photoUrl: '1u31jBVyshSC3IiSNAXir06ERDRd3EyNJ',
+  // Logo & Favicon: Bisa diisi Google Drive ID (cth: '1u31jBVysh...'), link Google Drive, atau path gambar lokal
+  // Jika dikosongkan '', akan otomatis menggunakan ikon monogram 'س' yang elegan
+  logoUrl: '',
+  faviconUrl: '',
 };
 
 export const EXPERIENCES: ExperienceItem[] = [
