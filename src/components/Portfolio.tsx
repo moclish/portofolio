@@ -117,16 +117,7 @@ export const Portfolio: React.FC = () => {
           >
             Sertifikasi
           </button>
-          <button
-            onClick={() => setActiveFilter("akademik")}
-            className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-              activeFilter === "faroid"
-                ? "bg-brand-600 text-white shadow-md"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            Fikih Waris
-          </button>
+
           <button
             onClick={() => setActiveFilter("akademik")}
             className={`filter-btn px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
@@ -135,7 +126,7 @@ export const Portfolio: React.FC = () => {
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
             }`}
           >
-            Akademik
+            Pelatihan
           </button>
         </div>
 
@@ -210,8 +201,7 @@ export const Portfolio: React.FC = () => {
                       {/* Hover action hint */}
                       <div className="absolute inset-0 bg-emerald-950/20 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-20">
                         <span className="bg-white/95 text-brand-800 text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md flex items-center gap-1.5 transform translate-y-2 group-hover:translate-y-0 transition-transform">
-                          <i className="fa-regular fa-eye"></i> Pratinjau
-                          Dokumen
+                          <i className="fa-regular fa-eye"></i> Lihat Dokumen
                         </span>
                       </div>
                     </div>
@@ -342,7 +332,7 @@ export const Portfolio: React.FC = () => {
                   onClick={() => setSelectedItem(null)}
                   className="px-5 py-2 rounded-xl bg-brand-600 text-white font-bold text-xs hover:bg-brand-700 transition-colors cursor-pointer"
                 >
-                  Tutup Pratinjau
+                  Tutup
                 </button>
               </div>
             </div>

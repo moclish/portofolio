@@ -3,18 +3,18 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
-import { PROFILE_INFO } from '../data/profileData';
+import React, { useState } from "react";
+import { PROFILE_INFO } from "../data/profileData";
 
 interface ContactProps {
   onShowToast: (msg: string) => void;
 }
 
 export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
-  const [senderName, setSenderName] = useState('');
-  const [senderOrg, setSenderOrg] = useState('');
-  const [msgTopic, setMsgTopic] = useState('Konsultasi Fikih Waris (Faroid)');
-  const [senderMessage, setSenderMessage] = useState('');
+  const [senderName, setSenderName] = useState("");
+  const [senderOrg, setSenderOrg] = useState("");
+  const [msgTopic, setMsgTopic] = useState("Konsultasi Fikih Waris (Faroid)");
+  const [senderMessage, setSenderMessage] = useState("");
   const [isCopied, setIsCopied] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isSentSuccess, setIsSentSuccess] = useState(false);
@@ -22,7 +22,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
   const handleCopyEmail = (email: string) => {
     const markSuccess = () => {
       setIsCopied(true);
-      onShowToast('Alamat email berhasil disalin ke clipboard!');
+      onShowToast("Alamat email berhasil disalin ke clipboard!");
       setTimeout(() => setIsCopied(false), 2500);
     };
 
@@ -40,15 +40,15 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
 
   const fallbackCopy = (text: string, onSuccess: () => void) => {
     try {
-      const temp = document.createElement('input');
+      const temp = document.createElement("input");
       temp.value = text;
       document.body.appendChild(temp);
       temp.select();
-      document.execCommand('copy');
+      document.execCommand("copy");
       document.body.removeChild(temp);
       onSuccess();
     } catch {
-      onShowToast('Gagal menyalin. Silakan salin email secara manual.');
+      onShowToast("Gagal menyalin. Silakan salin email secara manual.");
     }
   };
 
@@ -58,22 +58,22 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
     if (isSending) return;
 
     if (!senderName.trim()) {
-      onShowToast('Mohon cantumkan nama lengkap Anda.');
+      onShowToast("Mohon cantumkan nama lengkap Anda.");
       return;
     }
     if (!senderMessage.trim()) {
-      onShowToast('Mohon tuliskan pesan Anda terlebih dahulu.');
+      onShowToast("Mohon tuliskan pesan Anda terlebih dahulu.");
       return;
     }
 
     setIsSending(true);
 
-    const orgLine = senderOrg.trim() ? ` dari *${senderOrg.trim()}*` : '';
+    const orgLine = senderOrg.trim() ? ` dari *${senderOrg.trim()}*` : "";
     const text = `Assalamu'alaikum Ust. Sadono, Lc.\n\nPerkenalkan saya *${senderName.trim()}*${orgLine}.\n\n*Topik:* ${msgTopic}\n*Pesan:*\n${senderMessage.trim()}\n\nTerima kasih.`;
     const waUrl = `https://wa.me/${PROFILE_INFO.whatsappNumber}?text=${encodeURIComponent(text)}`;
 
     // Buka WhatsApp di tab baru secara langsung (terhindar dari pemblokir popup)
-    window.open(waUrl, '_blank', 'noopener,noreferrer');
+    window.open(waUrl, "_blank", "noopener,noreferrer");
 
     // Animasi proses pengiriman dan update status responsif
     setTimeout(() => {
@@ -81,13 +81,13 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
       setIsSentSuccess(true);
 
       // Reset form inputan
-      setSenderName('');
-      setSenderOrg('');
-      setSenderMessage('');
-      setMsgTopic('Konsultasi Fikih Waris (Faroid)');
+      setSenderName("");
+      setSenderOrg("");
+      setSenderMessage("");
+      setMsgTopic("Konsultasi Fikih Waris (Faroid)");
 
       // Tampilkan notifikasi toast berhasil
-      onShowToast('Pesan telah berhasil dikirim!');
+      onShowToast("Pesan telah berhasil dikirim!");
 
       // Kembalikan tombol ke keadaan normal setelah beberapa detik
       setTimeout(() => {
@@ -97,11 +97,14 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
   };
 
   const directWaGreeting = encodeURIComponent(
-    "Assalamu'alaikum Ust. Sadono, Lc., saya ingin bersilaturahmi dan berdiskusi."
+    "Assalamu'alaikum Ust. Sadono, Lc., saya ingin bersilaturahmi dan berdiskusi.",
   );
 
   return (
-    <section id="kontak" className="py-20 bg-warmbg relative overflow-hidden scroll-mt-[5px]">
+    <section
+      id="kontak"
+      className="py-20 bg-warmbg relative overflow-hidden scroll-mt-[5px]"
+    >
       {/* Decorative ambient background accents */}
       <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-brand-100/40 via-emerald-50/20 to-transparent pointer-events-none rounded-full blur-3xl -z-10" />
       <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-sunshine-400/10 rounded-full blur-3xl pointer-events-none -z-10" />
@@ -117,7 +120,8 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
             Kontak Saya
           </h2>
           <p className="text-gray-600 mt-3.5 text-sm sm:text-base leading-relaxed">
-            Terbuka untuk silaturahmi, konsultasi fikih waris atau kerja sama akademis
+            Terbuka untuk silaturahmi, konsultasi fikih waris atau kerja sama
+            akademis
           </p>
         </div>
 
@@ -134,7 +138,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                 </span>
                 <div className="min-w-0">
                   <h4 className="text-xs font-bold text-emerald-950 uppercase tracking-wider truncate">
-                    Siap Berdiskusi
+                    Mari Berdiskusi
                   </h4>
                   <p className="text-[11px] sm:text-xs text-emerald-800 font-medium truncate">
                     Respon aktif via WhatsApp
@@ -169,7 +173,8 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                       {PROFILE_INFO.whatsappDisplay}
                     </span>
                     <span className="text-xs text-emerald-600 font-medium flex items-center gap-1.5 mt-0.5">
-                      <i className="fa-regular fa-comment-dots"></i> Buka obrolan instan
+                      <i className="fa-regular fa-comment-dots"></i> Buka
+                      obrolan instan
                     </span>
                   </div>
                 </div>
@@ -199,13 +204,15 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                 onClick={() => handleCopyEmail(PROFILE_INFO.email)}
                 className={`shrink-0 py-2 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
                   isCopied
-                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs'
-                    : 'bg-amber-50/80 hover:bg-amber-100 text-amber-900 border-amber-200/80 shadow-2xs'
+                    ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                    : "bg-amber-50/80 hover:bg-amber-100 text-amber-900 border-amber-200/80 shadow-2xs"
                 }`}
                 title="Salin Alamat Email"
               >
-                <i className={`fa-solid ${isCopied ? 'fa-check text-xs' : 'fa-copy text-xs'}`}></i>
-                <span>{isCopied ? 'Tersalin' : 'Salin'}</span>
+                <i
+                  className={`fa-solid ${isCopied ? "fa-check text-xs" : "fa-copy text-xs"}`}
+                ></i>
+                <span>{isCopied ? "Tersalin" : "Salin"}</span>
               </button>
             </div>
 
@@ -298,7 +305,10 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
               </div>
 
               {/* Contact Form */}
-              <form onSubmit={handleContactSubmit} className="space-y-4 sm:space-y-4.5">
+              <form
+                onSubmit={handleContactSubmit}
+                className="space-y-4 sm:space-y-4.5"
+              >
                 {/* Name & Organization */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -323,8 +333,10 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
 
                   <div>
                     <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                      Lembaga/Instansi{' '}
-                      <span className="text-gray-400 font-normal">(Opsional)</span>
+                      Lembaga/Instansi{" "}
+                      <span className="text-gray-400 font-normal">
+                        (Opsional)
+                      </span>
                     </label>
                     <div className="relative">
                       <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -345,7 +357,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                 {/* Topic Selection */}
                 <div>
                   <label className="block text-xs font-bold text-gray-700 mb-1.5">
-                    Topik <span className="text-red-500">*</span>
+                    Subjek <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <select
@@ -358,10 +370,10 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                         ⚖️ Konsultasi Fikih Waris
                       </option>
                       <option value="Kerja Sama Akademik & Lembaga">
-                        🤝 Kerja Sama Akademik & Lembaga
+                        🤝 Kerja Sama Akademik
                       </option>
-                      <option value="Silaturahmi & Pertanyaan Umum">
-                        💬 Silaturahmi & Pertanyaan Umum
+                      <option value="Pertanyaan Umum">
+                        💬 Pertanyaan Umum
                       </option>
                       <option value="Kritik & Masukan Terkait Kalkulator Waris">
                         ⚙️ Masukan Terkait Aplikasi Kalkulator Waris
@@ -374,7 +386,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
                     <label className="block text-xs font-bold text-gray-700">
-                      Isi Pesan Anda <span className="text-red-500">*</span>
+                      Pesan <span className="text-red-500">*</span>
                     </label>
                     {senderMessage.length > 0 && (
                       <span className="text-[11px] text-gray-400">
@@ -400,21 +412,25 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                     disabled={isSending}
                     className={`w-full py-3.5 sm:py-4 px-6 rounded-2xl font-extrabold text-sm sm:text-base shadow-lg transition-all duration-300 flex items-center justify-center gap-2.5 relative overflow-hidden select-none ${
                       isSending
-                        ? 'bg-gradient-to-r from-emerald-600 via-teal-600 to-brand-700 text-white cursor-wait opacity-95 shadow-brand-600/20'
+                        ? "bg-gradient-to-r from-emerald-600 via-teal-600 to-brand-700 text-white cursor-wait opacity-95 shadow-brand-600/20"
                         : isSentSuccess
-                        ? 'bg-emerald-600 text-white shadow-emerald-600/30 ring-2 ring-emerald-400/50'
-                        : 'bg-gradient-to-r from-emerald-600 via-brand-600 to-teal-700 hover:from-emerald-700 hover:via-brand-700 hover:to-teal-800 text-white shadow-emerald-600/25 hover:shadow-xl hover:shadow-emerald-600/30 transform active:scale-[0.99] cursor-pointer group'
+                          ? "bg-emerald-600 text-white shadow-emerald-600/30 ring-2 ring-emerald-400/50"
+                          : "bg-gradient-to-r from-emerald-600 via-brand-600 to-teal-700 hover:from-emerald-700 hover:via-brand-700 hover:to-teal-800 text-white shadow-emerald-600/25 hover:shadow-xl hover:shadow-emerald-600/30 transform active:scale-[0.99] cursor-pointer group"
                     }`}
                   >
                     {isSending ? (
                       <div className="flex items-center gap-3">
                         <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                        <span className="tracking-wide">Sedang Menghubungkan ke WhatsApp...</span>
+                        <span className="tracking-wide">
+                          Sedang Menghubungkan ke WhatsApp...
+                        </span>
                       </div>
                     ) : isSentSuccess ? (
                       <div className="flex items-center gap-2.5">
                         <i className="fa-solid fa-circle-check text-xl text-emerald-200"></i>
-                        <span className="tracking-wide">Pesan Berhasil Diteruskan!</span>
+                        <span className="tracking-wide">
+                          Pesan Berhasil Diteruskan!
+                        </span>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2.5">

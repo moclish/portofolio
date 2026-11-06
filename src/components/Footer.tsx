@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { PROFILE_INFO } from '../data/profileData';
+import React from "react";
+import { PROFILE_INFO } from "../data/profileData";
 
 export const Footer: React.FC = () => {
   return (
@@ -14,10 +14,13 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-emerald-200/80 gap-5 text-center sm:text-left">
           <div className="space-y-1.5">
             <p className="font-bold text-white text-sm">
-              &copy; 2026 {PROFILE_INFO.name} — <span className="text-emerald-300 font-semibold">{PROFILE_INFO.spec}</span>
+              &copy; 2026 {PROFILE_INFO.name} —{" "}
+              <span className="text-emerald-300 font-semibold">
+                {PROFILE_INFO.spec}
+              </span>
             </p>
             <p className="text-xs text-emerald-200/70">
-              Mendidik dengan hikmah syariat, menghidupkan literasi faraidh berbasis teknologi.
+              Menghidupkan literasi faroidh berbasis teknologi.
             </p>
           </div>
 

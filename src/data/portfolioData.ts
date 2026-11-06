@@ -93,11 +93,11 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
       "Pelatihan kompetensi guru dalam menyusun inovasi pembelajaran berbasis AI, serta berbagi pengalaman dan praktik terbaik di madrasah.",
     imageUrl: "1HiIlNMt_dtvfn826-15QrwDpnRXXmISU",
     fallbackUrl:
-      "https://placehold.co/600x450/dcfce7/059669?text=Pelatihan+Faroid+2024",
+      "https://placehold.co/600x450/dcfce7/059669?text=Berbagi+Inovasi+Madrasah+2024",
   },
   {
     id: 5,
-    title: "Anti Bullying di Sekolah",
+    title: "Anti Bullying di Madrasah",
     category: "akademik",
     categoryLabel: "Pelatihan",
     categoryBadgeClass: "bg-amber-100 text-amber-700",
@@ -107,10 +107,10 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
     dateLabel: "Mei 2024",
     yearBadgeClass: "bg-brand-600 text-white",
     description:
-      "Pelatihan kompetensi guru dalam mengenali dan menangani kasus bullying serta kekerasan di lingkungan sekolah.",
+      "Pelatihan kompetensi guru dalam mengenali dan menangani kasus bullying serta kekerasan di lingkungan madrasah.",
     imageUrl: "1HMg0h7QSveR0FbffHLf9gjBWqxJKm1HR",
     fallbackUrl:
-      "https://placehold.co/600x450/dcfce7/047857?text=Modul+Buku+Saku+2023",
+      "https://placehold.co/600x450/dcfce7/047857?text=Anti+Bullying+2024",
   },
   {
     id: 6,
@@ -127,6 +127,125 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
       "Sertifikasi kompetensi bahasa Arab berdasarkan standar TOAFL yang diselenggarakan oleh Kursus Bahasa Arab Al-Azhar Kediri.",
     imageUrl: "1kktbnLyY2Q-lOB4Xvqp2GYdf5GkKiTfJ",
     fallbackUrl:
-      "https://placehold.co/600x450/dbeafe/1d4ed8?text=Sertifikat+Pedagogik+2022",
+      "https://placehold.co/600x450/dbeafe/1d4ed8?text=Sertifikat+TOAFL+2022",
+  },
+  {
+    id: 7,
+    title: "Pembelajaran Bahasa Arab Terkini",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Arabic Lingual Center",
+    year: "2022",
+    date: "2022-04-24",
+    dateLabel: "Apr 2022",
+    yearBadgeClass: "bg-brand-600 text-white",
+    description:
+      "Pelatihan kompetensi guru dalam mengembangkan metode pembelajaran bahasa Arab yang efektif dan inovatif di era digital.",
+    imageUrl: "1YXUslc10cIkP5Xv9VkKbM3Td8C0z-Ewp",
+    fallbackUrl:
+      "https://placehold.co/600x450/dcfce7/047857?text=Pembelajaran+Bahasa+Arab+Terkini+2022",
+  },
+  {
+    id: 8,
+    title: "Penyusunan Bahan Ajar Berbasis Media",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Pusbangkom",
+    year: "2024",
+    date: "2024-08-26",
+    dateLabel: "Agt 2024",
+    yearBadgeClass: "bg-brand-600 text-white",
+    description:
+      "Pelatihan kompetensi guru dalam menyusun bahan ajar berbasis media digital untuk meningkatkan kualitas pembelajaran di kelas.",
+    imageUrl: "1pj6X0Nz8-U4-fgCjyF4Tqwx9LjQy3yAy",
+    fallbackUrl:
+      "https://placehold.co/600x450/dcfce7/047857?text=Penyusunan+Bahan+Ajar+Berbasis+Media+2024",
+  },
+  {
+    id: 9,
+    title: "Membuat Proyek P5PPRA",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Pusbangkom",
+    year: "2024",
+    date: "2024-05-22",
+    dateLabel: "Mei 2024",
+    yearBadgeClass: "bg-brand-600 text-white",
+    description:
+      "Pelatihan kompetensi guru dalam menyusun proyek P5PPRA untuk meningkatkan kualitas pembelajaran di madrasah.",
+    imageUrl: "15AX49qpK2aQ80yVjjXtw7BsH3D2Qpqku",
+    fallbackUrl:
+      "https://placehold.co/600x450/dcfce7/047857?text=Membuat+Proyek+P5PPRA+2024",
+  },
+  {
+    id: 10,
+    title: "Penguatan Kurikulum KMA 450",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Kanwil Kemenag",
+    year: "2024",
+    date: "2024-07-27",
+    dateLabel: "Jul 2024",
+    yearBadgeClass: "bg-brand-600 text-white",
+    description:
+      "Pelatihan kompetensi guru dalam mengimplementasikan kurikulum KMA 450 untuk meningkatkan kualitas pembelajaran di madrasah.",
+    imageUrl: "134lji-HtOslfrdCWDYYPCuFPmuPD-bdN",
+    fallbackUrl:
+      "https://placehold.co/600x450/dcfce7/047857?text=Penguatan+Kurikulum+KMA+450+2024",
+  },
+  {
+    id: 11,
+    title: "Sharia Economic Festival",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "KSEI ",
+    year: "2019",
+    date: "2019-10-25",
+    dateLabel: "Okt 2019",
+    yearBadgeClass: "bg-brand-600 text-white",
+    description:
+      "Seminar Sharia Economic Festival bertujuan untuk meningkatkan pemahaman tentang ekonomi syariah dan peluang bisnis halal di Indonesia.",
+    imageUrl: "1TWn59T0VXGh1ns3Im4yogO-BUG9Rrvbd",
+    fallbackUrl:
+      "https://placehold.co/600x450/dcfce7/047857?text=Sharia+Economic+Festival+2019",
+  },
+  {
+    id: 12,
+    title: "Daurah Ilmiah Syari'ah",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Madinah Salam ",
+    year: "2021",
+    date: "2021-07-17",
+    dateLabel: "Jul 2021",
+    yearBadgeClass: "bg-brand-600 text-white",
+    description:
+      "Daurah Ilmiah Ilmu Syari'ah bertujuan untuk meningkatkan pemahaman tentang ilmu syariah dan penerapannya dalam kehidupan sehari-hari.",
+    imageUrl: "1d1bwifBBuu25s8EqfKsN0kdF2A2LzY-d",
+    fallbackUrl:
+      "https://placehold.co/600x450/dcfce7/047857?text=Daurah+Ilmiah+Syari'ah+2021",
+  },
+  {
+    id: 13,
+    title: "Implementasi KMA 183 dan 184",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Dirjen Pendis",
+    year: "2020",
+    date: "2020-11-07",
+    dateLabel: "Nov 2020",
+    yearBadgeClass: "bg-brand-600 text-white",
+    description:
+      "Pelatihan kompetensi guru dalam mengimplementasikan KMA 183 dan 184 untuk meningkatkan kualitas pembelajaran di madrasah.",
+    imageUrl: "14SwtHlrkgDfp7HnWzX8swWvVpIafO-IL",
+    fallbackUrl:
+      "https://placehold.co/600x450/dcfce7/047857?text=Implementasi+KMA+183+dan+184+2020",
   },
 ];
