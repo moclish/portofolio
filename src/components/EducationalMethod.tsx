@@ -7,7 +7,7 @@ import React from 'react';
 
 export const EducationalMethod: React.FC = () => {
   return (
-    <section id="tentang" className="py-20 bg-white">
+    <section id="tentang" className="py-20 bg-white scroll-mt-[5px] border-t border-emerald-100/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <span className="text-brand-600 font-bold text-sm uppercase tracking-wider bg-brand-50 px-4 py-1.5 rounded-full border border-brand-100">

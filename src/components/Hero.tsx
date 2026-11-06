@@ -16,7 +16,7 @@ export const Hero: React.FC = () => {
   return (
     <section
       id="beranda"
-      className="pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden bg-pattern"
+      className="pt-32 pb-20 md:pt-40 md:pb-28 relative overflow-hidden bg-pattern scroll-mt-24"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">

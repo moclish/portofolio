@@ -24,9 +24,9 @@ export const BackToTop: React.FC = () => {
     <a
       href="#beranda"
       id="backToTopBtn"
-      className={`fixed bottom-6 right-6 z-40 p-3.5 sm:px-4 sm:py-3 rounded-full bg-gradient-to-r from-brand-600 to-emerald-700 hover:from-brand-500 hover:to-emerald-600 text-white shadow-xl shadow-brand-900/30 border border-emerald-400/40 transition-all duration-300 flex items-center gap-2 text-xs font-bold group cursor-pointer ${
+      className={`fixed bottom-6 right-6 z-40 p-3.5 sm:px-4 sm:py-3 rounded-full bg-gradient-to-r from-brand-600 to-emerald-700 hover:from-brand-500 hover:to-emerald-600 text-white shadow-xl shadow-brand-900/30 border border-emerald-400/40 backdrop-blur-xs transition-all duration-300 flex items-center gap-2 text-xs font-bold group cursor-pointer ${
         show
-          ? 'opacity-100 pointer-events-auto translate-y-0'
+          ? 'opacity-100 md:opacity-60 md:hover:opacity-100 pointer-events-auto translate-y-0'
           : 'opacity-0 pointer-events-none translate-y-4'
       }`}
       aria-label="Kembali ke atas"

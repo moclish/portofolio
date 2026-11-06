@@ -518,7 +518,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
   return (
     <section
       id="simulator"
-      className="py-16 md:py-20 bg-gradient-to-br from-emerald-900 via-brand-900 to-teal-950 text-white relative overflow-hidden"
+      className="py-16 md:py-20 bg-gradient-to-br from-emerald-900 via-brand-900 to-teal-950 text-white relative overflow-hidden scroll-mt-[5px]"
     >
       <div className="absolute inset-0 opacity-10 bg-pattern"></div>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

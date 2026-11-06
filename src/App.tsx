@@ -37,8 +37,8 @@ export default function App() {
         <EducationalMethod />
         <Experience />
         <Education />
-        <MawarisCalculator onShowToast={showToast} />
         <Portfolio />
+        <MawarisCalculator onShowToast={showToast} />
         <Contact onShowToast={showToast} />
       </main>
 
