@@ -1636,7 +1636,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                   <span className="text-xs font-extrabold text-amber-900 flex items-center gap-1.5">
                     <i className="fa-solid fa-shield-halved text-amber-600"></i>
                     <span>
-                      Kaidah Hajb Hirman Terdeteksi ({activeMahjubAlerts.length})
+                      ({activeMahjubAlerts.length}) Orang/Kelompok Terhalang:
                     </span>
                   </span>
                 </div>
@@ -1647,7 +1647,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/95 border border-amber-200/90 text-[11px] shadow-2xs text-amber-950 font-medium"
                       title={item.detail}
                     >
-                      <span className="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
                       <strong className="font-bold text-gray-900">
                         {item.target}
                       </strong>
@@ -1682,12 +1682,12 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         : "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
                     }`}
                   >
-                    <span>Selanjutnya (Pasangan & Ortu)</span>
+                    <span>Selanjutnya</span>
                     <i className="fa-solid fa-arrow-right text-xs"></i>
                   </button>
                   {!isHartaEntered && (
                     <p className="text-[11px] text-center text-gray-500">
-                      💡 Isi nominal Total Harta untuk membuka langkah pemilihan ahli waris.
+                      💡 Isi nominal Total Harta untuk membuka langkah selanjutnya
                     </p>
                   )}
                 </div>
@@ -1773,7 +1773,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         {isCalculating ? (
                           <>
                             <span className="w-3 h-3 border-2 border-emerald-700/30 border-t-emerald-700 rounded-full animate-spin"></span>
-                            <span>Menghitung...</span>
+                            <span>Sedang Menghitung...</span>
                           </>
                         ) : (
                           <>
@@ -1834,7 +1834,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                 <div className="p-3 sm:p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-300 flex items-center justify-between gap-3 text-amber-950 shadow-xs animate-in fade-in duration-300">
                   <div className="flex items-center gap-2 text-xs font-semibold min-w-0">
                     <i className="fa-solid fa-arrows-rotate text-amber-600 animate-spin"></i>
-                    <span className="truncate">Data form telah diubah. Hasil belum diperbarui.</span>
+                    <span className="truncate">Data ada yang diubah. Hasil belum diperbarui.</span>
                   </div>
                   <button
                     type="button"
@@ -1842,7 +1842,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     onClick={handleHitungClick}
                     className="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95 transition-all"
                   >
-                    <span>Hitung Ulang</span>
+                    <span>Perbarui</span>
                   </button>
                 </div>
               )}
