@@ -8,6 +8,7 @@ import {
   MawarisInputState,
   StatusPasangan,
   MazhabKakek,
+  MawarisCalculationOutput,
 } from "../types/mawaris";
 import { calculateMawaris } from "../utils/mawarisCalculator";
 import { parseMoney, formatRupiah } from "../utils/formatters";
@@ -25,7 +26,15 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
   const [hutangRaw, setHutangRaw] = useState("0");
   const [wasiatRaw, setWasiatRaw] = useState("0");
 
-  // Step Wizard active step: 1 (Harta) | 2 (Pasangan & Ortu) | 3 (Keturunan) | 4 (Saudara)
+  // State untuk kontrol visibilitas hasil dan snapshot kalkulasi (tidak berubah realtime jika input diedit)
+  const [showResults, setShowResults] = useState(false);
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [activeCalculation, setActiveCalculation] =
+    useState<MawarisCalculationOutput | null>(null);
+  const [isDirtyAfterCalc, setIsDirtyAfterCalc] = useState(false);
+
+  // Step Wizard: max unlocked step untuk memastikan langkah 2,3,4 terkunci jika langkah sebelumnya belum selesai
+  const [maxUnlockedStep, setMaxUnlockedStep] = useState<1 | 2 | 3 | 4>(1);
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Step 2: Pasangan & Leluhur
@@ -81,10 +90,27 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
 
   const isHartaEntered = hartaKotorNum > 0;
 
-  // Auto-reset to Step 1 if Harta is cleared
+  // Sisa harta bersih setelah dikurang biaya jenazah dan hutang
+  const sisaSebelumWasiat = Math.max(
+    0,
+    hartaKotorNum - biayaJenazahNum - hutangNum,
+  );
+  // Persentase wasiat realtime dari harta bersih setelah jenazah & hutang
+  const wasiatPct =
+    sisaSebelumWasiat > 0 ? (wasiatNum / sisaSebelumWasiat) * 100 : 0;
+  // 1/3 = 33.333334%
+  const isWasiatValid = wasiatPct <= 33.333334;
+
+  // Auto-reset to Step 1 and hide results if Harta is cleared
   useEffect(() => {
-    if (!isHartaEntered && currentStep > 1) {
-      setCurrentStep(1);
+    if (!isHartaEntered) {
+      if (currentStep > 1) {
+        setCurrentStep(1);
+      }
+      setMaxUnlockedStep(1);
+      setShowResults(false);
+      setActiveCalculation(null);
+      setIsDirtyAfterCalc(false);
     }
   }, [isHartaEntered, currentStep]);
 
@@ -505,20 +531,59 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
     ],
   );
 
-  const calculation = useMemo(() => calculateMawaris(inputState), [inputState]);
+  // Jika user mengubah form setelah hasil ditampilkan, tandai bahwa data telah berubah
+  // Snapshot activeCalculation TETAP disimpan dan tidak diupdate realtime sampai user klik tombol hitung ulang
+  useEffect(() => {
+    if (showResults && activeCalculation) {
+      setIsDirtyAfterCalc(true);
+    }
+  }, [inputState]);
 
   const handleHitungClick = () => {
-    onShowToast("Perhitungan waris berhasil diperbarui!");
-    const el = document.getElementById("hasilCardSection");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
+    if (!isHartaEntered) {
+      onShowToast("Mohon masukkan nominal Total Harta terlebih dahulu.");
+      setCurrentStep(1);
+      return;
     }
+
+    setIsCalculating(true);
+
+    setTimeout(() => {
+      // Ambil snapshot hasil perhitungan pada saat tombol diklik
+      const result = calculateMawaris(inputState);
+      setActiveCalculation(result);
+      setShowResults(true);
+      setIsDirtyAfterCalc(false);
+      setIsCalculating(false);
+      onShowToast(
+        showResults
+          ? "Hasil perhitungan waris berhasil diperbarui!"
+          : "Hasil perhitungan waris berhasil dihitung!",
+      );
+
+      // Smooth scroll to 10px above form ringkasan harta
+      setTimeout(() => {
+        const targetEl =
+          document.getElementById("ringkasanHartaCard") ||
+          document.getElementById("hasilCardSection");
+        if (targetEl) {
+          const navbarHeight = window.innerWidth < 768 ? 72 : 80;
+          const targetOffset = 10;
+          const targetY =
+            targetEl.getBoundingClientRect().top +
+            window.scrollY -
+            navbarHeight -
+            targetOffset;
+          window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
+        }
+      }, 200);
+    }, 650);
   };
 
   return (
     <section
       id="simulator"
-      className="py-16 md:py-20 bg-gradient-to-br from-emerald-900 via-brand-900 to-teal-950 text-white relative overflow-hidden scroll-mt-[5px]"
+      className="py-16 md:py-20 bg-gradient-to-br from-emerald-900 via-brand-900 to-teal-950 text-white relative overflow-hidden scroll-mt-20 md:scroll-mt-24"
     >
       <div className="absolute inset-0 opacity-10 bg-pattern"></div>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -534,9 +599,20 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          {/* Form Inputs Column (Left) */}
-          <div className="lg:col-span-7 bg-white text-gray-900 p-5 sm:p-7 rounded-3xl shadow-2xl border border-emerald-400/30 space-y-5">
+        <div
+          className={`transition-all duration-500 ease-in-out ${
+            showResults && activeCalculation
+              ? "grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start"
+              : "max-w-2xl sm:max-w-3xl mx-auto"
+          }`}
+        >
+          {/* Form Inputs Column */}
+          <div
+            id="calculatorFormCard"
+            className={`bg-white text-gray-900 p-5 sm:p-7 rounded-3xl shadow-2xl border border-emerald-400/30 space-y-5 transition-all duration-500 ${
+              showResults && activeCalculation ? "lg:col-span-7" : "w-full"
+            }`}
+          >
             {/* Step Navigation Header */}
             {!isHartaEntered ? (
               <div className="flex items-center justify-between bg-emerald-50/80 px-4 py-2.5 rounded-2xl border border-emerald-100 text-xs text-brand-900 font-bold">
@@ -572,23 +648,45 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     : []),
                 ].map((item) => {
                   const isActive = currentStep === item.step;
+                  const isUnlocked =
+                    isHartaEntered && item.step <= maxUnlockedStep;
+
                   return (
                     <button
                       key={item.step}
                       type="button"
-                      onClick={() => setCurrentStep(item.step)}
-                      className={`flex-1 min-w-fit px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                      disabled={!isUnlocked}
+                      onClick={() => {
+                        if (isUnlocked) {
+                          setCurrentStep(item.step);
+                        }
+                      }}
+                      className={`flex-1 min-w-fit px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                         isActive
-                          ? "bg-brand-600 text-white shadow-xs"
-                          : "bg-white/80 text-gray-700 hover:bg-white border border-emerald-100"
+                          ? "bg-brand-600 text-white shadow-xs cursor-default"
+                          : isUnlocked
+                            ? "bg-white/80 text-gray-700 hover:bg-white border border-emerald-100 cursor-pointer"
+                            : "bg-gray-100/70 text-gray-400 border border-gray-200/50 cursor-not-allowed opacity-50"
                       }`}
+                      title={
+                        !isUnlocked
+                          ? "Selesaikan langkah sebelumnya terlebih dahulu"
+                          : undefined
+                      }
                     >
                       <i
                         className={`fa-solid ${item.icon} text-[10px] ${
-                          isActive ? "text-white" : "text-brand-600"
+                          isActive
+                            ? "text-white"
+                            : isUnlocked
+                              ? "text-brand-600"
+                              : "text-gray-400"
                         }`}
                       ></i>
                       <span>{item.label}</span>
+                      {!isUnlocked && (
+                        <i className="fa-solid fa-lock text-[9px] text-gray-400 ml-0.5"></i>
+                      )}
                     </button>
                   );
                 })}
@@ -636,75 +734,101 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     <label className="block text-[11px] font-semibold text-gray-600 mb-1">
                       Biaya Jenazah
                     </label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      id="biayaJenazah"
-                      value={biayaJenazahRaw}
-                      onChange={(e) =>
-                        handleMoneyChange(e.target.value, setBiayaJenazahRaw)
-                      }
-                      onFocus={(e) => e.target.select()}
-                      placeholder="0"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 focus:ring-2 focus:ring-brand-500"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none select-none">
+                        Rp
+                      </span>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        id="biayaJenazah"
+                        value={biayaJenazahRaw}
+                        onChange={(e) =>
+                          handleMoneyChange(e.target.value, setBiayaJenazahRaw)
+                        }
+                        onFocus={(e) => e.target.select()}
+                        placeholder="0"
+                        className="w-full pl-8 pr-2.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 focus:ring-2 focus:ring-brand-500 bg-white"
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block text-[11px] font-semibold text-gray-600 mb-1">
                       Hutang Mayyit
                     </label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      id="hutang"
-                      value={hutangRaw}
-                      onChange={(e) =>
-                        handleMoneyChange(e.target.value, setHutangRaw)
-                      }
-                      onFocus={(e) => e.target.select()}
-                      placeholder="0"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 focus:ring-2 focus:ring-brand-500"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none select-none">
+                        Rp
+                      </span>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        id="hutang"
+                        value={hutangRaw}
+                        onChange={(e) =>
+                          handleMoneyChange(e.target.value, setHutangRaw)
+                        }
+                        onFocus={(e) => e.target.select()}
+                        placeholder="0"
+                        className="w-full pl-8 pr-2.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 focus:ring-2 focus:ring-brand-500 bg-white"
+                      />
+                    </div>
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-600 mb-1">
-                      Wasiat (Maks 1/3)
-                    </label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      id="wasiat"
-                      value={wasiatRaw}
-                      onChange={(e) =>
-                        handleMoneyChange(e.target.value, setWasiatRaw)
-                      }
-                      onFocus={(e) => e.target.select()}
-                      placeholder="0"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 focus:ring-2 focus:ring-brand-500"
-                    />
+                    <div className="flex items-center justify-between mb-1">
+                      <label className="block text-[11px] font-semibold text-gray-600 truncate">
+                        Wasiat <span className="text-gray-400 font-normal">(Maks 1/3)</span>
+                      </label>
+                      {wasiatNum > 0 && (
+                        <span
+                          className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded transition-colors ${
+                            sisaSebelumWasiat === 0 || !isWasiatValid
+                              ? "text-red-600 bg-red-50 border border-red-200"
+                              : "text-emerald-700 bg-emerald-50 border border-emerald-200"
+                          }`}
+                          title={
+                            !isWasiatValid
+                              ? "Lebih dari 33%. Berdasarkan syariat, sistem otomatis hanya mencatat maksimal 1/3."
+                              : `${wasiatPct.toFixed(1)}% dari harta setelah dikurangi jenazah dan hutang`
+                          }
+                        >
+                          {sisaSebelumWasiat > 0
+                            ? !isWasiatValid
+                              ? "Lebih dari 1/3"
+                              : `${wasiatPct.toFixed(1)}%`
+                            : "> 33%"}
+                        </span>
+                      )}
+                    </div>
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none select-none">
+                        Rp
+                      </span>
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        id="wasiat"
+                        value={wasiatRaw}
+                        onChange={(e) =>
+                          handleMoneyChange(e.target.value, setWasiatRaw)
+                        }
+                        onFocus={(e) => e.target.select()}
+                        placeholder="0"
+                        className="w-full pl-8 pr-2.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 focus:ring-2 focus:ring-brand-500 bg-white"
+                      />
+                    </div>
+                    {wasiatNum > 0 && sisaSebelumWasiat > 0 && !isWasiatValid && (
+                      <p
+                        className="text-[10px] text-red-600 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
+                        title={`Batas syar'i maksimal 1/3: Rp ${Math.floor(sisaSebelumWasiat / 3).toLocaleString("id-ID")}`}
+                      >
+                        <i className="fa-solid fa-triangle-exclamation text-[9px] shrink-0"></i>
+                        <span className="truncate">
+                          Maksimal 1/3: (Rp {Math.floor(sisaSebelumWasiat / 3).toLocaleString("id-ID")})
+                        </span>
+                      </p>
+                    )}
                   </div>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    disabled={!isHartaEntered}
-                    onClick={() => setCurrentStep(2)}
-                    className={`w-full py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md ${
-                      isHartaEntered
-                        ? "bg-brand-600 hover:bg-brand-700 text-white cursor-pointer active:scale-[0.99]"
-                        : "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
-                    }`}
-                  >
-                    <span>Selanjutnya</span>
-                    <i className="fa-solid fa-arrow-right text-xs"></i>
-                  </button>
-                  {!isHartaEntered && (
-                    <p className="text-[11px] text-center text-gray-500 mt-2">
-                      💡 Masukkan nominal Total Harta di atas untuk membuka
-                      langkah pemilihan ahli waris.
-                    </p>
-                  )}
                 </div>
               </div>
             )}
@@ -723,61 +847,74 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                 </div>
 
                 <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1">
-                      Status Yang Meninggal
-                    </label>
-                    <select
-                      id="statusPasangan"
-                      value={statusPasangan}
-                      onChange={(e) =>
-                        setStatusPasangan(e.target.value as StatusPasangan)
-                      }
-                      className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 bg-white focus:ring-2 focus:ring-brand-500"
-                    >
-                      <option value="none">
-                        Tidak Ada Pasangan (atau Belum/Tidak Menikah)
-                      </option>
-                      <option value="istri">
-                        Suami Meninggal (Mewariskan ke Istri)
-                      </option>
-                      <option value="suami">
-                        Istri Meninggal (Mewariskan ke Suami)
-                      </option>
-                    </select>
-                  </div>
-
-                  {statusPasangan === "istri" && (
-                    <div className="p-3 bg-warmbg rounded-2xl border border-gray-200/70 flex items-center justify-between animate-in fade-in duration-200">
-                      <div>
-                        <span className="block text-xs font-bold text-gray-800">
-                          Jumlah Istri
-                        </span>
-                        <span className="text-[11px] text-gray-500">
-                          Berbagi rata bagian 1/4 atau 1/8
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          type="button"
-                          onClick={() => stepNumber(setJmlIstri, -1, 1, 4)}
-                          className="w-7 h-7 rounded-lg bg-white border border-gray-300 font-bold text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                        >
-                          -
-                        </button>
-                        <span className="w-8 text-center font-bold text-sm text-brand-800">
-                          {jmlIstri}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() => stepNumber(setJmlIstri, 1, 1, 4)}
-                          className="w-7 h-7 rounded-lg bg-white border border-gray-300 font-bold text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
-                        >
-                          +
-                        </button>
-                      </div>
+                  <div
+                    className={`grid gap-3 transition-all ${
+                      statusPasangan === "istri"
+                        ? "grid-cols-1 sm:grid-cols-2"
+                        : "grid-cols-1"
+                    }`}
+                  >
+                    <div>
+                      <label className="block text-xs font-bold text-gray-700 mb-1">
+                        Yang Meninggal
+                      </label>
+                      <select
+                        id="statusPasangan"
+                        value={statusPasangan}
+                        onChange={(e) =>
+                          setStatusPasangan(e.target.value as StatusPasangan)
+                        }
+                        className="w-full h-11 px-3.5 py-2.5 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 bg-white focus:ring-2 focus:ring-brand-500"
+                      >
+                        <option value="none">
+                          Belum Menikah/Duda/Janda
+                        </option>
+                        <option value="istri">
+                          Suami Meninggal (Mewariskan ke Istri)
+                        </option>
+                        <option value="suami">
+                          Istri Meninggal (Mewariskan ke Suami)
+                        </option>
+                      </select>
                     </div>
-                  )}
+
+                    {statusPasangan === "istri" && (
+                      <div className="animate-in fade-in duration-200">
+                        <label className="block text-xs font-bold text-gray-700 mb-1">
+                          Jumlah Istri
+                        </label>
+                        <div className="h-11 px-3 py-1.5 bg-warmbg rounded-xl border border-gray-200/80 flex items-center justify-between">
+                          <div className="min-w-0 pr-1">
+                            <span className="block text-xs font-bold text-gray-800 leading-tight truncate">
+                              {jmlIstri} Orang Istri
+                            </span>
+                            <span className="text-[10px] text-gray-500 leading-tight block truncate">
+                              Berbagi rata 1/4 atau 1/8
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => stepNumber(setJmlIstri, -1, 1, 4)}
+                              className="w-7 h-7 rounded-lg bg-white border border-gray-300 font-bold text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center justify-center active:scale-95 transition-transform"
+                            >
+                              -
+                            </button>
+                            <span className="w-6 text-center font-bold text-sm text-brand-800">
+                              {jmlIstri}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => stepNumber(setJmlIstri, 1, 1, 4)}
+                              className="w-7 h-7 rounded-lg bg-white border border-gray-300 font-bold text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center justify-center active:scale-95 transition-transform"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
 
                   {/* Orang Tua (Kakek & Nenek hanya tampil jika TIDAK terhalang) */}
                   <div className="space-y-2 pt-1">
@@ -889,23 +1026,6 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       </div>
                     )}
                   </div>
-                </div>
-
-                <div className="flex items-center gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(1)}
-                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-xs hover:bg-gray-50 cursor-pointer"
-                  >
-                    ← Kembali ke Harta
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(3)}
-                    className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md cursor-pointer"
-                  >
-                    Lanjut ke Keturunan →
-                  </button>
                 </div>
               </div>
             )}
@@ -1060,34 +1180,6 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         </div>
                       </div>
                     </div>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(2)}
-                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-xs hover:bg-gray-50 cursor-pointer"
-                  >
-                    ← Kembali ke Ortu
-                  </button>
-                  {saudaraMahjubByAll ? (
-                    <button
-                      type="button"
-                      onClick={handleHitungClick}
-                      className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-700 hover:to-emerald-700 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5"
-                    >
-                      <span>Lihat Hasil Perhitungan</span>
-                      <i className="fa-solid fa-arrow-down text-[10px]"></i>
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setCurrentStep(4)}
-                      className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md cursor-pointer"
-                    >
-                      Lanjut ke Saudara →
-                    </button>
                   )}
                 </div>
               </div>
@@ -1534,24 +1626,6 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     </div>
                   )}
                 </div>
-
-                <div className="flex items-center gap-2 pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setCurrentStep(3)}
-                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-xs hover:bg-gray-50 cursor-pointer"
-                  >
-                    ← Kembali ke Keturunan
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleHitungClick}
-                    className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 to-emerald-600 hover:from-brand-700 hover:to-emerald-700 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5"
-                  >
-                    <span>Selesai & Lihat Hasil</span>
-                    <i className="fa-solid fa-arrow-down text-[10px]"></i>
-                  </button>
-                </div>
               </div>
             )}
 
@@ -1562,8 +1636,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                   <span className="text-xs font-extrabold text-amber-900 flex items-center gap-1.5">
                     <i className="fa-solid fa-shield-halved text-amber-600"></i>
                     <span>
-                      Kaidah Hajb Hirman Terdeteksi ({activeMahjubAlerts.length}
-                      )
+                      Kaidah Hajb Hirman Terdeteksi ({activeMahjubAlerts.length})
                     </span>
                   </span>
                 </div>
@@ -1589,220 +1662,380 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                 </div>
               </div>
             )}
-          </div>
 
-          {/* Result Display Column (Right) */}
-          <div
-            id="hasilCardSection"
-            className="lg:col-span-5 space-y-4 sm:space-y-5"
-          >
-            {!isHartaEntered ? (
-              /* Initial State Placeholder */
-              <div
-                id="placeholderResult"
-                className="bg-white/10 backdrop-blur-md text-white p-6 sm:p-8 rounded-3xl border border-emerald-400/20 text-center space-y-3 py-12"
-              >
-                <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-2xl mx-auto border border-emerald-400/30">
-                  <i className="fa-solid fa-calculator"></i>
-                </div>
-                <h4 className="text-base font-bold text-white">
-                  Siap Menghitung Warisanmu
-                </h4>
-                <p className="text-xs text-emerald-200/80 max-w-xs mx-auto leading-relaxed">
-                  Isi rincian harta & kewajiban dan hasilnya akan otomatis
-                  muncul di sini
-                </p>
-              </div>
-            ) : (
-              /* Real Results */
-              <div id="realResultCards" className="space-y-4 sm:space-y-5">
-                {/* Special Case Alert Banner (Akdariyah, Himariyah, Umariyyatain) */}
-                {calculation.kasusKhusus && (
-                  <div className="p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl border border-amber-200 text-gray-900 shadow-md">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs">
-                        <i className="fa-solid fa-star"></i>
-                      </span>
-                      <strong className="text-xs font-extrabold text-amber-900">
-                        {calculation.kasusKhusus}
-                      </strong>
-                    </div>
-                    {calculation.penjelasanSyari &&
-                      calculation.penjelasanSyari.length > 0 && (
-                        <p className="text-[11px] text-amber-900/90 leading-relaxed mt-1">
-                          {calculation.penjelasanSyari[0]}
-                        </p>
-                      )}
-                  </div>
-                )}
-
-                {/* Summary Card */}
-                <div className="bg-white text-gray-900 p-4 sm:p-6 rounded-3xl shadow-xl border border-emerald-400/30 space-y-3.5">
-                  <div className="flex items-center justify-between border-b pb-2.5 border-gray-100 gap-2">
-                    <h3 className="text-sm sm:text-base font-extrabold text-brand-900 flex items-center gap-2">
-                      <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs sm:text-sm">
-                        <i className="fa-solid fa-file-invoice-dollar"></i>
-                      </span>
-                      <span>Ringkasan Harta</span>
-                    </h3>
-                    <span
-                      id="statusFaroidBadge"
-                      className="text-[11px] sm:text-xs bg-brand-100 text-brand-800 font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
-                    >
-                      {calculation.badgeStatus}
-                    </span>
-                  </div>
-
-                  {/* Clean 2-column mobile dashboard grid */}
-                  <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs">
-                    <div className="p-2.5 sm:p-3 bg-gray-50/80 rounded-2xl border border-gray-100">
-                      <span className="block text-[10px] sm:text-[11px] text-gray-500 font-medium">
-                        Harta Kotor
-                      </span>
-                      <strong
-                        id="dispHartaKotor"
-                        className="block text-xs sm:text-sm text-gray-900 font-mono font-bold mt-0.5 truncate"
-                      >
-                        {formatRupiah(calculation.hartaKotorVal)}
-                      </strong>
-                    </div>
-
-                    <div className="p-2.5 sm:p-3 bg-rose-50/60 rounded-2xl border border-rose-100">
-                      <div className="flex items-center justify-between">
-                        <span className="block text-[10px] sm:text-[11px] text-rose-700 font-medium">
-                          Kewajiban
-                        </span>
-                        {calculation.wasiatIsCapped && (
-                          <span
-                            className="text-[8px] bg-rose-200/80 text-rose-800 font-bold px-1 rounded"
-                            title="Wasiat syar'i maksimal 1/3 dari harta setelah hutang"
-                          >
-                            Maks 1/3
-                          </span>
-                        )}
-                      </div>
-                      <strong
-                        id="dispKewajiban"
-                        className="block text-xs sm:text-sm text-rose-700 font-mono font-bold mt-0.5 truncate"
-                      >
-                        - {formatRupiah(calculation.kewajibanTotal)}
-                      </strong>
-                    </div>
-
-                    <div className="col-span-2 p-3 sm:p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50/70 rounded-2xl border border-emerald-200/90 flex items-center justify-between gap-2">
-                      <div className="min-w-0">
-                        <span className="block text-[11px] sm:text-xs font-bold text-emerald-950">
-                          Harta Bersih (Tarakah)
-                        </span>
-                        <span className="text-[10px] text-emerald-700/80 hidden sm:block">
-                          Siap dibagikan kepada ahli waris
-                        </span>
-                      </div>
-                      <strong
-                        id="dispHartaBersih"
-                        className="font-mono text-sm sm:text-base font-black text-brand-900 whitespace-nowrap"
-                      >
-                        {formatRupiah(calculation.tarakah)}
-                      </strong>
-                    </div>
-                  </div>
-
-                  {calculation.asalMasalah && (
-                    <div className="pt-0.5 flex items-center justify-between text-[11px] text-gray-500 font-medium px-1">
-                      <span>Asal Masalah:</span>
-                      <span className="font-mono font-bold text-gray-800">
-                        {calculation.asalMasalah}
-                        {calculation.tashihMasalah && (
-                          <span className="text-brand-700 font-semibold ml-1">
-                            (Tashih: {calculation.tashihMasalah})
-                          </span>
-                        )}
-                      </span>
-                    </div>
+            {/* Tombol Aksi & Navigasi Langkah (Lanjut ke... & Kembali ke...) - Diletakkan tepat di bawah widget kaidah hajb */}
+            <div className="pt-1">
+              {currentStep === 1 && (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    disabled={!isHartaEntered}
+                    onClick={() => {
+                      setMaxUnlockedStep((prev) =>
+                        Math.max(prev, 2) as 1 | 2 | 3 | 4,
+                      );
+                      setCurrentStep(2);
+                    }}
+                    className={`w-full py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md ${
+                      isHartaEntered
+                        ? "bg-brand-600 hover:bg-brand-700 text-white cursor-pointer active:scale-[0.99]"
+                        : "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
+                    }`}
+                  >
+                    <span>Selanjutnya (Pasangan & Ortu)</span>
+                    <i className="fa-solid fa-arrow-right text-xs"></i>
+                  </button>
+                  {!isHartaEntered && (
+                    <p className="text-[11px] text-center text-gray-500">
+                      💡 Isi nominal Total Harta untuk membuka langkah pemilihan ahli waris.
+                    </p>
                   )}
                 </div>
+              )}
 
-                {/* Detailed Breakdown List Card */}
-                <div className="bg-white text-gray-900 p-4 sm:p-6 rounded-3xl shadow-xl border border-emerald-400/30 space-y-3">
-                  <div className="flex items-center justify-between border-b pb-2.5 border-gray-100">
-                    <h4 className="text-xs sm:text-sm font-extrabold text-gray-900 flex items-center gap-1.5">
-                      <span>Rincian Bagian Ahli Waris</span>
-                    </h4>
-                    <span
-                      className="text-[11px] sm:text-xs bg-emerald-50 text-brand-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200"
-                      id="totalPersenTerbagi"
+              {currentStep === 2 && (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(1)}
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-xs hover:bg-gray-50 cursor-pointer"
+                  >
+                    ← Kembali ke Harta
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMaxUnlockedStep((prev) =>
+                        Math.max(prev, 3) as 1 | 2 | 3 | 4,
+                      );
+                      setCurrentStep(3);
+                    }}
+                    className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md cursor-pointer"
+                  >
+                    Lanjut ke Keturunan →
+                  </button>
+                </div>
+              )}
+
+              {currentStep === 3 && (
+                <div className="flex flex-col sm:flex-row items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(2)}
+                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-xs hover:bg-gray-50 cursor-pointer"
+                  >
+                    ← Kembali ke Ortu
+                  </button>
+                  {saudaraMahjubByAll ? (
+                    <button
+                      type="button"
+                      disabled={isCalculating}
+                      onClick={handleHitungClick}
+                      className="w-full sm:flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 via-emerald-600 to-teal-700 hover:from-brand-700 hover:to-emerald-700 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-80 disabled:cursor-wait transition-all active:scale-[0.99]"
                     >
-                      {calculation.totalPercentStr}
+                      {isCalculating ? (
+                        <>
+                          <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                          <span>Menghitung...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>
+                            {showResults
+                              ? "Hitung Ulang & Perbarui"
+                              : "Selesai & Lihat Hasil"}
+                          </span>
+                          <i className="fa-solid fa-calculator text-[10px]"></i>
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setMaxUnlockedStep((prev) =>
+                            Math.max(prev, 4) as 1 | 2 | 3 | 4,
+                          );
+                          setCurrentStep(4);
+                        }}
+                        className="w-full sm:flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md cursor-pointer"
+                      >
+                        Lanjut ke Saudara →
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isCalculating}
+                        onClick={handleHitungClick}
+                        className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-80"
+                        title="Selesai & hitung tanpa mengisi saudara atau kerabat"
+                      >
+                        {isCalculating ? (
+                          <>
+                            <span className="w-3 h-3 border-2 border-emerald-700/30 border-t-emerald-700 rounded-full animate-spin"></span>
+                            <span>Menghitung...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>Selesai & Lihat Hasil</span>
+                            <i className="fa-solid fa-calculator text-[10px]"></i>
+                          </>
+                        )}
+                      </button>
+                    </>
+                  )}
+                </div>
+              )}
+
+              {currentStep === 4 && !saudaraMahjubByAll && (
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentStep(3)}
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-xs hover:bg-gray-50 cursor-pointer"
+                  >
+                    ← Kembali ke Keturunan
+                  </button>
+                  <button
+                    type="button"
+                    disabled={isCalculating}
+                    onClick={handleHitungClick}
+                    className="flex-1 py-3 rounded-xl bg-gradient-to-r from-brand-600 via-emerald-600 to-teal-700 hover:from-brand-700 hover:to-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-wait transition-all active:scale-[0.99]"
+                  >
+                    {isCalculating ? (
+                      <>
+                        <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                        <span>Sedang Menghitung...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>
+                          {showResults
+                            ? "Hitung Ulang & Perbarui Hasil"
+                            : "Selesai & Lihat Hasil"}
+                        </span>
+                        <i className="fa-solid fa-calculator text-xs"></i>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Result Display Column (Right) - Tersembunyi by default, hanya muncul saat user klik tombol hitung */}
+          {showResults && activeCalculation && (
+            <div
+              id="hasilCardSection"
+              className="lg:col-span-5 space-y-4 sm:space-y-5 animate-in fade-in slide-in-from-right-8 duration-500"
+            >
+              {/* Notifikasi jika data form diubah setelah kalkulasi */}
+              {isDirtyAfterCalc && (
+                <div className="p-3 sm:p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-300 flex items-center justify-between gap-3 text-amber-950 shadow-xs animate-in fade-in duration-300">
+                  <div className="flex items-center gap-2 text-xs font-semibold min-w-0">
+                    <i className="fa-solid fa-arrows-rotate text-amber-600 animate-spin"></i>
+                    <span className="truncate">Data form telah diubah. Hasil belum diperbarui.</span>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={isCalculating}
+                    onClick={handleHitungClick}
+                    className="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95 transition-all"
+                  >
+                    <span>Hitung Ulang</span>
+                  </button>
+                </div>
+              )}
+
+              {/* Special Case Alert Banner (Akdariyah, Himariyah, Umariyyatain) */}
+              {activeCalculation.kasusKhusus && (
+                <div className="p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-3xl border border-amber-200 text-gray-900 shadow-md">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-xs">
+                      <i className="fa-solid fa-star"></i>
                     </span>
+                    <strong className="text-xs font-extrabold text-amber-900">
+                      {activeCalculation.kasusKhusus}
+                    </strong>
+                  </div>
+                  {activeCalculation.penjelasanSyari &&
+                    activeCalculation.penjelasanSyari.length > 0 && (
+                      <p className="text-[11px] text-amber-900/90 leading-relaxed mt-1">
+                        {activeCalculation.penjelasanSyari[0]}
+                      </p>
+                    )}
+                </div>
+              )}
+
+              {/* Summary Card */}
+              <div
+                id="ringkasanHartaCard"
+                className="bg-white text-gray-900 p-4 sm:p-6 rounded-3xl shadow-xl border border-emerald-400/30 space-y-3.5 scroll-mt-20 md:scroll-mt-24"
+              >
+                <div className="flex items-center justify-between border-b pb-2.5 border-gray-100 gap-2">
+                  <h3 className="text-sm sm:text-base font-extrabold text-brand-900 flex items-center gap-2">
+                    <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs sm:text-sm">
+                      <i className="fa-solid fa-file-invoice-dollar"></i>
+                    </span>
+                    <span>Ringkasan Harta</span>
+                  </h3>
+                  <span
+                    id="statusFaroidBadge"
+                    className="text-[11px] sm:text-xs bg-brand-100 text-brand-800 font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
+                  >
+                    {activeCalculation.badgeStatus}
+                  </span>
+                </div>
+
+                {/* Clean 2-column mobile dashboard grid */}
+                <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs">
+                  <div className="p-2.5 sm:p-3 bg-gray-50/80 rounded-2xl border border-gray-100">
+                    <span className="block text-[10px] sm:text-[11px] text-gray-500 font-medium">
+                      Harta Kotor
+                    </span>
+                    <strong
+                      id="dispHartaKotor"
+                      className="block text-xs sm:text-sm text-gray-900 font-mono font-bold mt-0.5 truncate"
+                    >
+                      {formatRupiah(activeCalculation.hartaKotorVal)}
+                    </strong>
                   </div>
 
-                  <div
-                    id="detailBagian"
-                    className="space-y-2 sm:space-y-2.5 max-h-[460px] overflow-y-auto pr-0.5 sm:pr-1"
-                  >
-                    {calculation.results.length === 0 ? (
-                      <div className="text-center py-6 text-xs text-gray-500">
-                        <i className="fa-solid fa-circle-info text-amber-500 mb-1 block text-base"></i>
-                        Tidak ada ahli waris yang berhak menerima warisan atau
-                        data belum lengkap.
-                      </div>
-                    ) : (
-                      calculation.results.map((r, i) => {
-                        const totalFormatted = formatRupiah(r.totalRupiah);
-                        const perPersonFormatted = formatRupiah(
-                          r.perPersonRupiah,
-                        );
-                        const hasMultiple = r.count > 1;
+                  <div className="p-2.5 sm:p-3 bg-rose-50/60 rounded-2xl border border-rose-100">
+                    <div className="flex items-center justify-between">
+                      <span className="block text-[10px] sm:text-[11px] text-rose-700 font-medium">
+                        Kewajiban
+                      </span>
+                      {activeCalculation.wasiatIsCapped && (
+                        <span
+                          className="text-[8px] bg-rose-200/80 text-rose-800 font-bold px-1 rounded"
+                          title="Wasiat syar'i maksimal 1/3 dari harta setelah hutang"
+                        >
+                          Maks 1/3
+                        </span>
+                      )}
+                    </div>
+                    <strong
+                      id="dispKewajiban"
+                      className="block text-xs sm:text-sm text-rose-700 font-mono font-bold mt-0.5 truncate"
+                    >
+                      - {formatRupiah(activeCalculation.kewajibanTotal)}
+                    </strong>
+                  </div>
 
-                        return (
-                          <div
-                            key={i}
-                            className={`p-3 sm:p-3.5 rounded-2xl ${r.badgeClass} border flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all hover:shadow-xs`}
-                          >
-                            <div className="min-w-0 flex-1">
-                              <div className="flex items-center gap-1.5 flex-wrap">
-                                <strong className="text-xs sm:text-sm font-extrabold text-gray-900">
-                                  {r.name}
-                                </strong>
-                                {r.jenisBagian && (
-                                  <span className="text-[9px] px-1.5 py-0.5 bg-white/90 text-gray-600 font-semibold rounded border border-gray-200">
-                                    {r.jenisBagian}
-                                  </span>
-                                )}
-                              </div>
-                              <div className="text-[11px] text-brand-700 font-medium flex items-center gap-1.5 mt-0.5 flex-wrap">
-                                <span>{r.ket}</span>
-                                <span className="text-gray-400">•</span>
-                                <span className="font-semibold">{r.pct}%</span>
-                                {r.saham && (
-                                  <>
-                                    <span className="text-gray-400">•</span>
-                                    <span className="text-gray-500 font-mono text-[10px]">
-                                      Saham: {r.saham}
-                                    </span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                            <div className="sm:text-right flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-1.5 sm:pt-0 border-gray-200/50 flex-shrink-0">
-                              <span className="text-xs sm:text-sm font-mono font-black text-brand-900">
-                                {totalFormatted}
-                              </span>
-                              {hasMultiple && (
-                                <span className="text-[10px] font-mono text-emerald-800 font-bold bg-white/95 px-1.5 py-0.5 rounded border border-emerald-200 shadow-2xs mt-0.5">
-                                  @ {perPersonFormatted} /orang
+                  <div className="col-span-2 p-3 sm:p-3.5 bg-gradient-to-r from-emerald-50 to-teal-50/70 rounded-2xl border border-emerald-200/90 flex items-center justify-between gap-2">
+                    <div className="min-w-0">
+                      <span className="block text-[11px] sm:text-xs font-bold text-emerald-950">
+                        Harta Bersih (Tarakah)
+                      </span>
+                      <span className="text-[10px] text-emerald-700/80 hidden sm:block">
+                        Siap dibagikan kepada ahli waris
+                      </span>
+                    </div>
+                    <strong
+                      id="dispHartaBersih"
+                      className="font-mono text-sm sm:text-base font-black text-brand-900 whitespace-nowrap"
+                    >
+                      {formatRupiah(activeCalculation.tarakah)}
+                    </strong>
+                  </div>
+                </div>
+
+                {activeCalculation.asalMasalah && (
+                  <div className="pt-0.5 flex items-center justify-between text-[11px] text-gray-500 font-medium px-1">
+                    <span>Asal Masalah:</span>
+                    <span className="font-mono font-bold text-gray-800">
+                      {activeCalculation.asalMasalah}
+                      {activeCalculation.tashihMasalah && (
+                        <span className="text-brand-700 font-semibold ml-1">
+                          (Tashih: {activeCalculation.tashihMasalah})
+                        </span>
+                      )}
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Detailed Breakdown List Card */}
+              <div className="bg-white text-gray-900 p-4 sm:p-6 rounded-3xl shadow-xl border border-emerald-400/30 space-y-3">
+                <div className="flex items-center justify-between border-b pb-2.5 border-gray-100">
+                  <h4 className="text-xs sm:text-sm font-extrabold text-gray-900 flex items-center gap-1.5">
+                    <span>Rincian Bagian Ahli Waris</span>
+                  </h4>
+                  <span
+                    className="text-[11px] sm:text-xs bg-emerald-50 text-brand-800 font-bold px-2 py-0.5 rounded-full border border-emerald-200"
+                    id="totalPersenTerbagi"
+                  >
+                    {activeCalculation.totalPercentStr}
+                  </span>
+                </div>
+
+                <div
+                  id="detailBagian"
+                  className="space-y-2 sm:space-y-2.5 max-h-[460px] overflow-y-auto pr-0.5 sm:pr-1"
+                >
+                  {activeCalculation.results.length === 0 ? (
+                    <div className="text-center py-6 text-xs text-gray-500">
+                      <i className="fa-solid fa-circle-info text-amber-500 mb-1 block text-base"></i>
+                      Tidak ada ahli waris yang berhak menerima warisan atau
+                      data belum lengkap.
+                    </div>
+                  ) : (
+                    activeCalculation.results.map((r, i) => {
+                      const totalFormatted = formatRupiah(r.totalRupiah);
+                      const perPersonFormatted = formatRupiah(
+                        r.perPersonRupiah,
+                      );
+                      const hasMultiple = r.count > 1;
+
+                      return (
+                        <div
+                          key={i}
+                          className={`p-3 sm:p-3.5 rounded-2xl ${r.badgeClass} border flex flex-col sm:flex-row sm:items-center justify-between gap-2 transition-all hover:shadow-xs`}
+                        >
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <strong className="text-xs sm:text-sm font-extrabold text-gray-900">
+                                {r.name}
+                              </strong>
+                              {r.jenisBagian && (
+                                <span className="text-[9px] px-1.5 py-0.5 bg-white/90 text-gray-600 font-semibold rounded border border-gray-200">
+                                  {r.jenisBagian}
                                 </span>
                               )}
                             </div>
+                            <div className="text-[11px] text-brand-700 font-medium flex items-center gap-1.5 mt-0.5 flex-wrap">
+                              <span>{r.ket}</span>
+                              <span className="text-gray-400">•</span>
+                              <span className="font-semibold">{r.pct}%</span>
+                              {r.saham && (
+                                <>
+                                  <span className="text-gray-400">•</span>
+                                  <span className="text-gray-500 font-mono text-[10px]">
+                                    Saham: {r.saham}
+                                  </span>
+                                </>
+                              )}
+                            </div>
                           </div>
-                        );
-                      })
-                    )}
-                  </div>
+                          <div className="sm:text-right flex sm:flex-col items-center sm:items-end justify-between sm:justify-center border-t sm:border-t-0 pt-1.5 sm:pt-0 border-gray-200/50 flex-shrink-0">
+                            <span className="text-xs sm:text-sm font-mono font-black text-brand-900">
+                              {totalFormatted}
+                            </span>
+                            {hasMultiple && (
+                              <span className="text-[10px] font-mono text-emerald-800 font-bold bg-white/95 px-1.5 py-0.5 rounded border border-emerald-200 shadow-2xs mt-0.5">
+                                @ {perPersonFormatted} /orang
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
                 </div>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </section>

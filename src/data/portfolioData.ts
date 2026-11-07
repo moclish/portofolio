@@ -248,4 +248,27 @@ export const PORTFOLIO_DATA: PortfolioItem[] = [
     fallbackUrl:
       "https://placehold.co/600x450/dcfce7/047857?text=Implementasi+KMA+183+dan+184+2020",
   },
+  {
+    id: 14,
+    title: "Gemini Academy Madrasah",
+    category: "akademik",
+    categoryLabel: "Pelatihan",
+    categoryBadgeClass: "bg-amber-100 text-amber-700",
+    organizer: "Websis For Edu",
+    year: "2026",
+    date: "2026-11-06",
+    dateLabel: "Nov 2026",
+    yearBadgeClass: "bg-brand-600 text-white",
+    description:
+      "Pelatihan Gemini Academy Madrasah bagi guru untuk meningkatkan produktifitas dan kualitas pembelajaran di kelas.",
+    imageUrl: "1mfrzDnA8aL0fP4EyYU0Z-r1Ng6jZVS3l",
+    fallbackUrl:
+      "https://placehold.co/600x450/dcfce7/047857?text=Implementasi+KMA+183+dan+184+2020",
+  },
 ];
+
+
+
+
+
+
