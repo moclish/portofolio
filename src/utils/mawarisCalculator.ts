@@ -639,6 +639,8 @@ export function calculateMawaris(
     name: string;
     count: number;
     frac: number;
+    num: number;
+    den: number;
     ket: string;
     isSpouse: boolean;
     jenisBagian?: string;
@@ -649,7 +651,9 @@ export function calculateMawaris(
 
   // 1. Pasangan
   if (statusPasangan === 'istri') {
-    const frac = effHasFuru ? 1 / 8 : 1 / 4;
+    const num = 1;
+    const den = effHasFuru ? 8 : 4;
+    const frac = num / den;
     const label =
       effectiveJmlIstri > 1 ? `Istri (${effectiveJmlIstri} orang)` : 'Istri';
     const ket = effHasFuru ? '1/8 (Ada Keturunan)' : '1/4 (Tanpa Keturunan)';
@@ -657,18 +661,24 @@ export function calculateMawaris(
       name: label,
       count: effectiveJmlIstri,
       frac,
+      num,
+      den,
       ket,
       isSpouse: true,
       jenisBagian: 'Fardh',
     });
     totalFardhFrac += frac;
   } else if (statusPasangan === 'suami') {
-    const frac = effHasFuru ? 1 / 4 : 1 / 2;
+    const num = 1;
+    const den = effHasFuru ? 4 : 2;
+    const frac = num / den;
     const ket = effHasFuru ? '1/4 (Ada Keturunan)' : '1/2 (Tanpa Keturunan)';
     fardhList.push({
       name: 'Suami',
       count: 1,
       frac,
+      num,
+      den,
       ket,
       isSpouse: true,
       jenisBagian: 'Fardh',
@@ -678,7 +688,9 @@ export function calculateMawaris(
 
   // 2. Ibu / Nenek
   if (adaIbu) {
-    const frac = effHasFuru || totalSaudaraRaw >= 2 ? 1 / 6 : 1 / 3;
+    const num = 1;
+    const den = effHasFuru || totalSaudaraRaw >= 2 ? 6 : 3;
+    const frac = num / den;
     const ket =
       effHasFuru || totalSaudaraRaw >= 2
         ? '1/6 (Ada Keturunan / 2+ Sdr)'
@@ -687,17 +699,23 @@ export function calculateMawaris(
       name: 'Ibu Kandung',
       count: 1,
       frac,
+      num,
+      den,
       ket,
       isSpouse: false,
       jenisBagian: 'Fardh',
     });
     totalFardhFrac += frac;
   } else if (effectiveAdaNenek) {
+    const num = 1;
+    const den = 6;
     const frac = 1 / 6;
     fardhList.push({
       name: 'Nenek',
       count: 1,
       frac,
+      num,
+      den,
       ket: '1/6 (Pengganti Ibu)',
       isSpouse: false,
       jenisBagian: 'Fardh',
@@ -712,6 +730,8 @@ export function calculateMawaris(
         name: 'Ayah Kandung',
         count: 1,
         frac: 1 / 6,
+        num: 1,
+        den: 6,
         ket: '1/6 (Ada Anak/Cucu Laki)',
         isSpouse: false,
         jenisBagian: 'Fardh Murni',
@@ -722,6 +742,8 @@ export function calculateMawaris(
         name: 'Ayah Kandung',
         count: 1,
         frac: 1 / 6,
+        num: 1,
+        den: 6,
         ket: '1/6 (Fardh) + Sisa Asabah',
         isSpouse: false,
         jenisBagian: 'Fardh + Asabah',
@@ -748,6 +770,8 @@ export function calculateMawaris(
         name: 'Kakek',
         count: 1,
         frac: 1 / 6,
+        num: 1,
+        den: 6,
         ket: '1/6 (Pengganti Ayah ada Furu Laki)',
         isSpouse: false,
         jenisBagian: 'Fardh Murni',
@@ -758,6 +782,8 @@ export function calculateMawaris(
         name: 'Kakek',
         count: 1,
         frac: 1 / 6,
+        num: 1,
+        den: 6,
         ket: '1/6 (Fardh) + Sisa Asabah',
         isSpouse: false,
         jenisBagian: 'Fardh + Asabah',
@@ -773,6 +799,8 @@ export function calculateMawaris(
         name: 'Anak Perempuan',
         count: 1,
         frac: 1 / 2,
+        num: 1,
+        den: 2,
         ket: '1/2 (Anak Tunggal)',
         isSpouse: false,
         jenisBagian: 'Fardh',
@@ -783,6 +811,8 @@ export function calculateMawaris(
         name: `Anak Perempuan (${anakPerempuan} orang)`,
         count: anakPerempuan,
         frac: 2 / 3,
+        num: 2,
+        den: 3,
         ket: `2/3 (Bagi rata ${anakPerempuan} orang)`,
         isSpouse: false,
         jenisBagian: 'Fardh',
@@ -798,6 +828,8 @@ export function calculateMawaris(
             name: 'Cucu Perempuan',
             count: 1,
             frac: 1 / 2,
+            num: 1,
+            den: 2,
             ket: '1/2 (Tanpa Anak Perempuan)',
             isSpouse: false,
             jenisBagian: 'Fardh',
@@ -808,6 +840,8 @@ export function calculateMawaris(
             name: `Cucu Perempuan (${effectiveCucuPerempuan} orang)`,
             count: effectiveCucuPerempuan,
             frac: 2 / 3,
+            num: 2,
+            den: 3,
             ket: `2/3 (Bagi rata ${effectiveCucuPerempuan} orang)`,
             isSpouse: false,
             jenisBagian: 'Fardh',
@@ -823,6 +857,8 @@ export function calculateMawaris(
               : 'Cucu Perempuan',
           count: effectiveCucuPerempuan,
           frac: 1 / 6,
+          num: 1,
+          den: 6,
           ket: '1/6 (Pelengkap 2/3 bersama 1 Anak Perempuan)',
           isSpouse: false,
           jenisBagian: 'Fardh (Takmilatan)',
@@ -834,7 +870,9 @@ export function calculateMawaris(
 
   // 7. Saudara Seibu (Akh / Ukht li Umm)
   if (effSdraSeibu > 0) {
-    const frac = effSdraSeibu === 1 ? 1 / 6 : 1 / 3;
+    const num = 1;
+    const den = effSdraSeibu === 1 ? 6 : 3;
+    const frac = num / den;
     const ket =
       effSdraSeibu === 1
         ? '1/6 (Saudara Seibu Tunggal)'
@@ -847,6 +885,8 @@ export function calculateMawaris(
       name: nameLabel,
       count: effSdraSeibu,
       frac,
+      num,
+      den,
       ket,
       isSpouse: false,
       jenisBagian: 'Fardh',
@@ -869,6 +909,8 @@ export function calculateMawaris(
           name: 'Saudara Perempuan Kandung',
           count: 1,
           frac: 1 / 2,
+          num: 1,
+          den: 2,
           ket: '1/2 (Saudari Kandung Tunggal)',
           isSpouse: false,
           jenisBagian: 'Fardh',
@@ -879,6 +921,8 @@ export function calculateMawaris(
           name: `Saudara Perempuan Kandung (${sdraPerempuanKandung} orang)`,
           count: sdraPerempuanKandung,
           frac: 2 / 3,
+          num: 2,
+          den: 3,
           ket: `2/3 (Bagi rata ${sdraPerempuanKandung} orang)`,
           isSpouse: false,
           jenisBagian: 'Fardh',
@@ -893,6 +937,8 @@ export function calculateMawaris(
               name: 'Saudara Perempuan Seayah',
               count: 1,
               frac: 1 / 2,
+              num: 1,
+              den: 2,
               ket: '1/2 (Saudari Seayah Tunggal)',
               isSpouse: false,
               jenisBagian: 'Fardh',
@@ -903,6 +949,8 @@ export function calculateMawaris(
               name: `Saudara Perempuan Seayah (${sdraPerempuanSeayah} orang)`,
               count: sdraPerempuanSeayah,
               frac: 2 / 3,
+              num: 2,
+              den: 3,
               ket: `2/3 (Bagi rata ${sdraPerempuanSeayah} orang)`,
               isSpouse: false,
               jenisBagian: 'Fardh',
@@ -918,6 +966,8 @@ export function calculateMawaris(
                 : 'Saudara Perempuan Seayah',
             count: sdraPerempuanSeayah,
             frac: 1 / 6,
+            num: 1,
+            den: 6,
             ket: '1/6 (Pelengkap 2/3 bersama 1 Saudari Kandung)',
             isSpouse: false,
             jenisBagian: 'Fardh (Takmilatan)',
@@ -1088,19 +1138,29 @@ export function calculateMawaris(
   // Hitung Asal Masalah dasar dari fardhList
   let calcAsalMasalah = 1;
   fardhList.forEach((item) => {
-    // Estimasi penyebut (misal 1/8 -> 8, 1/6 -> 6, 2/3 -> 3, 1/4 -> 4)
-    const den = Math.round(1 / item.frac) || (Math.round(2 / item.frac) === 3 ? 3 : 1);
-    calcAsalMasalah = lcm(calcAsalMasalah, den);
+    calcAsalMasalah = lcm(calcAsalMasalah, item.den);
   });
   if (calcAsalMasalah === 1) {
     if (asabahCandidate) {
       const parts = asabahCandidate.countL * 2 + asabahCandidate.countP * 1;
-      calcAsalMasalah = asabahCandidate.countP > 0 ? parts : (asabahCandidate.countL > 0 ? asabahCandidate.countL : 1);
+      calcAsalMasalah =
+        asabahCandidate.countP > 0
+          ? parts
+          : asabahCandidate.countL > 0
+          ? asabahCandidate.countL
+          : 1;
       if (calcAsalMasalah === 0) calcAsalMasalah = 1;
     } else {
       calcAsalMasalah = 1;
     }
   }
+
+  // Saham fardh awal berdasarkan Asal Masalah murni
+  const sihamList = fardhList.map((item) => {
+    const siham = Math.round((calcAsalMasalah / item.den) * item.num);
+    return { ...item, siham };
+  });
+  const totalSiham = sihamList.reduce((acc, it) => acc + it.siham, 0);
 
   // PENANGANAN KHUSUS KAKEK DENGAN SAUDARA (JUMHUR / ZAID BIN TSABIT)
   if (isKakekWithSaudaraJumhur) {
@@ -1205,28 +1265,37 @@ export function calculateMawaris(
         jenisBagian: 'Muqasamah Sisa',
       });
     }
-  } else if (totalFardhFrac > 1) {
-    // TERJADI 'AUL (Porsi Fardh melebihi 100%)
+  } else if (totalSiham > calcAsalMasalah) {
+    // TERJADI 'AUL (Total siham melebihi Asal Masalah dasar)
+    const aulAsalMasalah = totalSiham;
     badgeStatus = "Terjadi 'Aul (Fardh > 100%)";
     totalPercentStr = "100% Terbagi ('Aul)";
     kasusKhususName = "Mas'alah 'Aul";
-    const aulAsalMasalah = Math.round(calcAsalMasalah * totalFardhFrac);
 
     penjelasanSyariList.push(
-      `Terjadi 'Aul: Total fardh (${(totalFardhFrac * 100).toFixed(1)}%) melebihi 100%. Asal masalah dinaikkan dari ${calcAsalMasalah} menjadi ${aulAsalMasalah}. Seluruh porsi ahli waris berkurang secara proporsional dan adil.`
+      `Terjadi 'Aul: Total porsi fardh (${totalSiham}/${calcAsalMasalah} atau ${(totalFardhFrac * 100).toFixed(1)}%) melebihi 100%. Asal masalah dinaikkan dari ${calcAsalMasalah} menjadi ${aulAsalMasalah}. Seluruh porsi ahli waris fardh berkurang secara proporsional dan adil.`
     );
 
     if (asabahCandidate) {
-      penjelasanSyariList.push(
-        `Kerabat asabah (${asabahCandidate.nameL || asabahCandidate.nameP}) tidak mendapatkan bagian karena seluruh harta telah habis terbagi kepada Ashabul Furudh.`
-      );
+      if (asabahCandidate.type === 'AYAH') {
+        penjelasanSyariList.push(
+          "Ayah Kandung memperoleh porsi fardh pokoknya (1/6) yang ikut ter-'aul. Tidak ada tambahan sisa asabah karena seluruh harta telah habis terbagi kepada Ashabul Furudh."
+        );
+      } else if (asabahCandidate.type === 'KAKEK') {
+        penjelasanSyariList.push(
+          "Kakek memperoleh porsi fardh pokoknya (1/6) yang ikut ter-'aul. Tidak ada tambahan sisa asabah karena seluruh harta telah habis terbagi kepada Ashabul Furudh."
+        );
+      } else {
+        penjelasanSyariList.push(
+          `Kerabat asabah (${asabahCandidate.nameL || asabahCandidate.nameP}) tidak mendapatkan bagian sisa karena seluruh harta telah habis terbagi kepada Ashabul Furudh (terjadi 'Aul).`
+        );
+      }
     }
 
-    fardhList.forEach((item) => {
-      const scaledFrac = item.frac / totalFardhFrac;
+    sihamList.forEach((item) => {
+      const scaledFrac = item.siham / aulAsalMasalah;
       const rTotal = scaledFrac * tarakah;
       const pct = (scaledFrac * 100).toFixed(1);
-      const siham = Math.round(item.frac * calcAsalMasalah);
 
       finalResults.push({
         name: item.name,
@@ -1236,7 +1305,7 @@ export function calculateMawaris(
         perPersonRupiah: rTotal / item.count,
         pct,
         badgeClass: 'bg-amber-50/80 border-amber-200',
-        saham: `${siham} / ${aulAsalMasalah}`,
+        saham: `${item.siham} / ${aulAsalMasalah}`,
         jenisBagian: "Fardh 'Aul",
       });
     });
@@ -1464,7 +1533,9 @@ export function calculateMawaris(
 
   // Tashih Mas'alah: periksa apakah ada kelompok yang sahamnya tidak habis dibagi jumlah kepalanya
   let generalTashihMasalah: number | undefined = undefined;
-  if (!isUmariyyatain && !isAkdariyah && totalFardhFrac <= 1) {
+  if (!isUmariyyatain && !isAkdariyah) {
+    const baseMasalah =
+      totalSiham > calcAsalMasalah ? totalSiham : calcAsalMasalah;
     let multiplier = 1;
     finalResults.forEach((item) => {
       if (item.count > 1 && item.saham) {
@@ -1477,7 +1548,7 @@ export function calculateMawaris(
       }
     });
     if (multiplier > 1) {
-      generalTashihMasalah = calcAsalMasalah * multiplier;
+      generalTashihMasalah = baseMasalah * multiplier;
     }
   }
 
@@ -1496,6 +1567,7 @@ export function calculateMawaris(
     mahjubNotes,
     kasusKhusus: kasusKhususName,
     asalMasalah: calcAsalMasalah,
+    aulMasalah: totalSiham > calcAsalMasalah ? totalSiham : undefined,
     tashihMasalah: generalTashihMasalah,
     penjelasanSyari: penjelasanSyariList,
   };

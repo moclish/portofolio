@@ -58,6 +58,8 @@ export interface MawarisCalculationOutput {
   mahjubNotes: string[];
   kasusKhusus?: string;
   asalMasalah?: number;
+  aulMasalah?: number;
   tashihMasalah?: number;
   penjelasanSyari?: string[];
 }
+

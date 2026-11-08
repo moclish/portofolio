@@ -32,6 +32,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
   const [activeCalculation, setActiveCalculation] =
     useState<MawarisCalculationOutput | null>(null);
   const [isDirtyAfterCalc, setIsDirtyAfterCalc] = useState(false);
+  const [justUpdated, setJustUpdated] = useState(false);
 
   // Step Wizard: max unlocked step untuk memastikan langkah 2,3,4 terkunci jika langkah sebelumnya belum selesai
   const [maxUnlockedStep, setMaxUnlockedStep] = useState<1 | 2 | 3 | 4>(1);
@@ -90,20 +91,45 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
 
   const isHartaEntered = hartaKotorNum > 0;
 
+  // Validasi 1: Biaya Jenazah sama dengan atau melebihi Total Harta
+  const isBiayaJenazahHabis =
+    hartaKotorNum > 0 && biayaJenazahNum >= hartaKotorNum;
+
+  // Sisa harta setelah dikurangi Biaya Jenazah
+  const sisaSetelahJenazah = Math.max(0, hartaKotorNum - biayaJenazahNum);
+
+  // Validasi 2: Hutang Mayyit sama dengan atau melebihi sisa harta setelah biaya jenazah
+  const isHutangHabis =
+    hartaKotorNum > 0 &&
+    !isBiayaJenazahHabis &&
+    hutangNum >= sisaSetelahJenazah;
+
   // Sisa harta bersih setelah dikurang biaya jenazah dan hutang
-  const sisaSebelumWasiat = Math.max(
-    0,
-    hartaKotorNum - biayaJenazahNum - hutangNum,
-  );
+  const sisaSebelumWasiat = Math.max(0, sisaSetelahJenazah - hutangNum);
+
+  // Batas maksimal wasiat syar'i = 1/3 dari sisa harta bersih setelah jenazah & hutang
+  const maxWasiat = sisaSebelumWasiat / 3;
+
   // Persentase wasiat realtime dari harta bersih setelah jenazah & hutang
   const wasiatPct =
     sisaSebelumWasiat > 0 ? (wasiatNum / sisaSebelumWasiat) * 100 : 0;
-  // 1/3 = 33.333334%
-  const isWasiatValid = wasiatPct <= 33.333334;
 
-  // Auto-reset to Step 1 and hide results if Harta is cleared
+  // Validasi 3: Wasiat tidak boleh melebihi 1/3 dari sisa harta bersih
+  const isWasiatValid = wasiatNum <= maxWasiat + 0.0001;
+  const isWasiatOverLimit =
+    wasiatNum > 0 && (sisaSebelumWasiat === 0 || !isWasiatValid);
+
+  // Status validasi lengkap Langkah 1
+  const isStep1Valid =
+    isHartaEntered &&
+    !isBiayaJenazahHabis &&
+    !isHutangHabis &&
+    !isWasiatOverLimit &&
+    sisaSebelumWasiat > 0;
+
+  // Auto-reset to Step 1 and hide results if Harta is cleared or invalid
   useEffect(() => {
-    if (!isHartaEntered) {
+    if (!isHartaEntered || !isStep1Valid) {
       if (currentStep > 1) {
         setCurrentStep(1);
       }
@@ -112,7 +138,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
       setActiveCalculation(null);
       setIsDirtyAfterCalc(false);
     }
-  }, [isHartaEntered, currentStep]);
+  }, [isHartaEntered, isStep1Valid, currentStep]);
 
   const hasMaleFuru = anakLaki > 0 || cucuLaki > 0;
   const hasFemaleFuru = anakPerempuan > 0 || cucuPerempuan > 0;
@@ -546,6 +572,19 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
       return;
     }
 
+    if (isBiayaJenazahHabis || isHutangHabis || sisaSebelumWasiat <= 0) {
+      onShowToast("Tidak ada harta yang tersisa untuk dibagikan.");
+      setCurrentStep(1);
+      return;
+    }
+
+    if (isWasiatOverLimit) {
+      onShowToast("Wasiat tidak boleh lebih dari 1/3 harta bersih.");
+      setCurrentStep(1);
+      return;
+    }
+
+    const isRecalculation = showResults && activeCalculation !== null;
     setIsCalculating(true);
 
     setTimeout(() => {
@@ -555,13 +594,19 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
       setShowResults(true);
       setIsDirtyAfterCalc(false);
       setIsCalculating(false);
-      onShowToast(
-        showResults
-          ? "Hasil perhitungan waris berhasil diperbarui!"
-          : "Hasil perhitungan waris berhasil dihitung!",
-      );
 
-      // Smooth scroll to 10px above form ringkasan harta
+      if (isRecalculation) {
+        setJustUpdated(true);
+        setTimeout(() => {
+          setJustUpdated(false);
+        }, 2800);
+        onShowToast("Hasil perhitungan waris berhasil diperbarui!");
+      } else {
+        setJustUpdated(false);
+        onShowToast("Hasil perhitungan waris berhasil dihitung!");
+      }
+
+      // Smooth scroll to 10px above div ringkasan harta
       setTimeout(() => {
         const targetEl =
           document.getElementById("ringkasanHartaCard") ||
@@ -613,69 +658,75 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               showResults && activeCalculation ? "lg:col-span-7" : "w-full"
             }`}
           >
-            {/* Step Navigation Header */}
-            {!isHartaEntered ? (
-              <div className="flex items-center justify-between bg-emerald-50/80 px-4 py-2.5 rounded-2xl border border-emerald-100 text-xs text-brand-900 font-bold">
-                <span className="flex items-center gap-2">
-                  <span className="w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center text-[10px] font-black">
-                    1
-                  </span>
-                  <span>Harta & Kewajiban</span>
-                </span>
-              </div>
-            ) : (
-              <div className="flex items-center gap-1.5 p-1.5 bg-emerald-50/70 rounded-2xl border border-emerald-100 overflow-x-auto shadow-2xs">
-                {[
-                  { step: 1 as const, label: "1. Harta", icon: "fa-coins" },
-                  {
-                    step: 2 as const,
-                    label: "2. Pasangan & Ortu",
-                    icon: "fa-users",
-                  },
-                  {
-                    step: 3 as const,
-                    label: "3. Keturunan",
-                    icon: "fa-child-reaching",
-                  },
-                  ...(!saudaraMahjubByAll
-                    ? [
-                        {
-                          step: 4 as const,
-                          label: "4. Saudara",
-                          icon: "fa-people-roof",
-                        },
-                      ]
-                    : []),
-                ].map((item) => {
-                  const isActive = currentStep === item.step;
-                  const isUnlocked =
-                    isHartaEntered && item.step <= maxUnlockedStep;
+            {/* Step Navigation Header - Responsive Grid, Zero Horizontal Scroll */}
+            <div
+              className={`grid gap-1 sm:gap-1.5 p-1 sm:p-1.5 bg-emerald-50/70 rounded-2xl border border-emerald-100 shadow-2xs ${
+                saudaraMahjubByAll ? "grid-cols-3" : "grid-cols-4"
+              }`}
+            >
+              {[
+                {
+                  step: 1 as const,
+                  mobileLabel: "Harta",
+                  desktopSuffix: "",
+                  icon: "fa-coins",
+                },
+                {
+                  step: 2 as const,
+                  mobileLabel: "Pasangan",
+                  desktopSuffix: " & Ortu",
+                  icon: "fa-users",
+                },
+                {
+                  step: 3 as const,
+                  mobileLabel: "Keturunan",
+                  desktopSuffix: "",
+                  icon: "fa-child-reaching",
+                },
+                ...(!saudaraMahjubByAll
+                  ? [
+                      {
+                        step: 4 as const,
+                        mobileLabel: "Saudara",
+                        desktopSuffix: "",
+                        icon: "fa-people-roof",
+                      },
+                    ]
+                  : []),
+              ].map((item) => {
+                const isActive = currentStep === item.step;
+                const isUnlocked =
+                  item.step === 1 ||
+                  (isStep1Valid && item.step <= maxUnlockedStep);
 
-                  return (
-                    <button
-                      key={item.step}
-                      type="button"
-                      disabled={!isUnlocked}
-                      onClick={() => {
-                        if (isUnlocked) {
-                          setCurrentStep(item.step);
-                        }
-                      }}
-                      className={`flex-1 min-w-fit px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                        isActive
-                          ? "bg-brand-600 text-white shadow-xs cursor-default"
-                          : isUnlocked
-                            ? "bg-white/80 text-gray-700 hover:bg-white border border-emerald-100 cursor-pointer"
-                            : "bg-gray-100/70 text-gray-400 border border-gray-200/50 cursor-not-allowed opacity-50"
-                      }`}
-                      title={
-                        !isUnlocked
-                          ? "Selesaikan langkah sebelumnya terlebih dahulu"
-                          : undefined
+                return (
+                  <button
+                    key={item.step}
+                    type="button"
+                    disabled={!isUnlocked}
+                    onClick={() => {
+                      if (isUnlocked) {
+                        setCurrentStep(item.step);
                       }
-                    >
+                    }}
+                    className={`w-full py-1.5 sm:py-2 px-1 sm:px-2 rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 select-none ${
+                      isActive
+                        ? "bg-brand-600 text-white shadow-xs cursor-default ring-1 ring-brand-700/20"
+                        : isUnlocked
+                          ? "bg-white/90 text-gray-700 hover:bg-white hover:text-brand-900 border border-emerald-100/70 cursor-pointer shadow-2xs active:scale-95"
+                          : "bg-gray-100/60 text-gray-400 border border-gray-200/40 cursor-not-allowed opacity-60"
+                    }`}
+                    title={
+                      !isUnlocked
+                        ? item.step > 1 && !isHartaEntered
+                          ? "Masukkan Total Harta terlebih dahulu"
+                          : "Selesaikan langkah sebelumnya terlebih dahulu"
+                        : undefined
+                    }
+                  >
+                    <div className="flex items-center gap-1 shrink-0">
                       <i
-                        className={`fa-solid ${item.icon} text-[10px] ${
+                        className={`fa-solid ${item.icon} text-[10px] sm:text-xs ${
                           isActive
                             ? "text-white"
                             : isUnlocked
@@ -683,15 +734,23 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                               : "text-gray-400"
                         }`}
                       ></i>
-                      <span>{item.label}</span>
                       {!isUnlocked && (
-                        <i className="fa-solid fa-lock text-[9px] text-gray-400 ml-0.5"></i>
+                        <i className="fa-solid fa-lock text-[8px] sm:text-[9px] text-gray-400"></i>
                       )}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+                    </div>
+                    <span className="text-[10px] sm:text-xs leading-none truncate tracking-tight">
+                      <span className="font-extrabold">{item.step}.</span>{" "}
+                      <span>{item.mobileLabel}</span>
+                      {item.desktopSuffix && (
+                        <span className="hidden md:inline">
+                          {item.desktopSuffix}
+                        </span>
+                      )}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
 
             {/* STEP 1: Harta & Kewajiban */}
             {currentStep === 1 && (
@@ -748,13 +807,26 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         }
                         onFocus={(e) => e.target.select()}
                         placeholder="0"
-                        className="w-full pl-8 pr-2.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 focus:ring-2 focus:ring-brand-500 bg-white"
+                        className={`w-full pl-8 pr-2.5 py-2 border rounded-xl text-xs font-semibold focus:ring-2 bg-white ${
+                          isBiayaJenazahHabis
+                            ? "border-red-300 text-red-900 focus:ring-red-500 bg-red-50/20"
+                            : "border-gray-200 text-gray-800 focus:ring-brand-500"
+                        }`}
                       />
                     </div>
+                    {isBiayaJenazahHabis && (
+                      <p
+                        className="text-[10px] text-red-600 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
+                        title="Tidak ada harta yang tersisa"
+                      >
+                        <i className="fa-solid fa-triangle-exclamation text-[9px] shrink-0"></i>
+                        <span className="truncate">Tidak ada harta yang tersisa</span>
+                      </p>
+                    )}
                   </div>
                   <div>
                     <label className="block text-[11px] font-semibold text-gray-600 mb-1">
-                      Hutang Mayyit
+                      Hutang Mayit
                     </label>
                     <div className="relative">
                       <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-xs pointer-events-none select-none">
@@ -770,14 +842,27 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         }
                         onFocus={(e) => e.target.select()}
                         placeholder="0"
-                        className="w-full pl-8 pr-2.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 focus:ring-2 focus:ring-brand-500 bg-white"
+                        className={`w-full pl-8 pr-2.5 py-2 border rounded-xl text-xs font-semibold focus:ring-2 bg-white ${
+                          isHutangHabis
+                            ? "border-red-300 text-red-900 focus:ring-red-500 bg-red-50/20"
+                            : "border-gray-200 text-gray-800 focus:ring-brand-500"
+                        }`}
                       />
                     </div>
+                    {isHutangHabis && (
+                      <p
+                        className="text-[10px] text-red-600 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
+                        title="Tidak ada harta yang tersisa"
+                      >
+                        <i className="fa-solid fa-triangle-exclamation text-[9px] shrink-0"></i>
+                        <span className="truncate">Tidak ada harta yang tersisa</span>
+                      </p>
+                    )}
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
                       <label className="block text-[11px] font-semibold text-gray-600 truncate">
-                        Wasiat <span className="text-gray-400 font-normal">(Maks 1/3)</span>
+                        Wasiat <span className="text-gray-400 font-normal">(Maksimal 1/3)</span>
                       </label>
                       {wasiatNum > 0 && (
                         <span
@@ -788,7 +873,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                           }`}
                           title={
                             !isWasiatValid
-                              ? "Lebih dari 33%. Berdasarkan syariat, sistem otomatis hanya mencatat maksimal 1/3."
+                              ? "Lebih dari 1/3. Berdasarkan syariat, sistem otomatis hanya mencatat maksimal 1/3."
                               : `${wasiatPct.toFixed(1)}% dari harta setelah dikurangi jenazah dan hutang`
                           }
                         >
@@ -796,7 +881,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             ? !isWasiatValid
                               ? "Lebih dari 1/3"
                               : `${wasiatPct.toFixed(1)}%`
-                            : "> 33%"}
+                            : "Lebih dari 1/3"}
                         </span>
                       )}
                     </div>
@@ -814,17 +899,27 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         }
                         onFocus={(e) => e.target.select()}
                         placeholder="0"
-                        className="w-full pl-8 pr-2.5 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-800 focus:ring-2 focus:ring-brand-500 bg-white"
+                        className={`w-full pl-8 pr-2.5 py-2 border rounded-xl text-xs font-semibold focus:ring-2 bg-white ${
+                          isWasiatOverLimit
+                            ? "border-red-300 text-red-900 focus:ring-red-500 bg-red-50/20"
+                            : "border-gray-200 text-gray-800 focus:ring-brand-500"
+                        }`}
                       />
                     </div>
-                    {wasiatNum > 0 && sisaSebelumWasiat > 0 && !isWasiatValid && (
+                    {isWasiatOverLimit && (
                       <p
                         className="text-[10px] text-red-600 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
-                        title={`Batas syar'i maksimal 1/3: Rp ${Math.floor(sisaSebelumWasiat / 3).toLocaleString("id-ID")}`}
+                        title={
+                          sisaSebelumWasiat > 0
+                            ? `Batas syar'i maksimal 1/3: Rp ${Math.floor(maxWasiat).toLocaleString("id-ID")}`
+                            : "Tidak ada harta yang tersisa"
+                        }
                       >
                         <i className="fa-solid fa-triangle-exclamation text-[9px] shrink-0"></i>
                         <span className="truncate">
-                          Maksimal 1/3: (Rp {Math.floor(sisaSebelumWasiat / 3).toLocaleString("id-ID")})
+                          {sisaSebelumWasiat > 0
+                            ? `Maksimal 1/3: (Rp ${Math.floor(maxWasiat).toLocaleString("id-ID")})`
+                            : "Tidak ada harta yang tersisa"}
                         </span>
                       </p>
                     )}
@@ -849,7 +944,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                 <div className="space-y-3">
                   <div
                     className={`grid gap-3 transition-all ${
-                      statusPasangan === "istri"
+                      statusPasangan === "istri" || statusPasangan === "suami"
                         ? "grid-cols-1 sm:grid-cols-2"
                         : "grid-cols-1"
                     }`}
@@ -870,10 +965,10 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                           Belum Menikah/Duda/Janda
                         </option>
                         <option value="istri">
-                          Suami Meninggal (Mewariskan ke Istri)
+                          Suami
                         </option>
                         <option value="suami">
-                          Istri Meninggal (Mewariskan ke Suami)
+                          Istri
                         </option>
                       </select>
                     </div>
@@ -886,10 +981,10 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         <div className="h-11 px-3 py-1.5 bg-warmbg rounded-xl border border-gray-200/80 flex items-center justify-between">
                           <div className="min-w-0 pr-1">
                             <span className="block text-xs font-bold text-gray-800 leading-tight truncate">
-                              {jmlIstri} Orang Istri
+                              {jmlIstri} Orang
                             </span>
                             <span className="text-[10px] text-gray-500 leading-tight block truncate">
-                              Berbagi rata 1/4 atau 1/8
+                              1/4 atau 1/8
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
@@ -907,6 +1002,52 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                               type="button"
                               onClick={() => stepNumber(setJmlIstri, 1, 1, 4)}
                               className="w-7 h-7 rounded-lg bg-white border border-gray-300 font-bold text-sm text-gray-700 hover:bg-gray-100 cursor-pointer flex items-center justify-center active:scale-95 transition-transform"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {statusPasangan === "suami" && (
+                      <div className="animate-in fade-in duration-200">
+                        <div className="flex items-center justify-between mb-1">
+                          <label className="block text-xs font-bold text-gray-700">
+                            Jumlah Suami
+                          </label>
+                          <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                            Maksimal 1
+                          </span>
+                        </div>
+                        <div className="h-11 px-3 py-1.5 bg-gray-50/90 rounded-xl border border-gray-200/90 flex items-center justify-between">
+                          <div className="min-w-0 pr-1">
+                            <span className="block text-xs font-bold text-gray-800 leading-tight truncate">
+                              1 Orang
+                            </span>
+                            <span className="text-[10px] text-gray-500 leading-tight block truncate">
+                              1/2 atau 1/4
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <button
+                              type="button"
+                              disabled
+                              className="w-7 h-7 rounded-lg bg-gray-100 border border-gray-200 font-bold text-sm text-gray-400 cursor-not-allowed flex items-center justify-center select-none"
+                              title="Jumlah suami tetap 1 orang (syariat tidak membolehkan poliandri)"
+                              aria-label="Kurangi jumlah suami (disabled)"
+                            >
+                              -
+                            </button>
+                            <span className="w-6 text-center font-bold text-sm text-brand-800 select-none">
+                              1
+                            </span>
+                            <button
+                              type="button"
+                              disabled
+                              className="w-7 h-7 rounded-lg bg-gray-100 border border-gray-200 font-bold text-sm text-gray-400 cursor-not-allowed flex items-center justify-center select-none"
+                              title="Jumlah suami tetap 1 orang (syariat tidak membolehkan poliandri)"
+                              aria-label="Tambah jumlah suami (disabled)"
                             >
                               +
                             </button>
@@ -1009,7 +1150,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                                 : "bg-white text-gray-700 border border-gray-200"
                             }`}
                           >
-                            Jumhur (Muqasamah)
+                            Jumhur (Muqasamah/(1/3)
                           </button>
                           <button
                             type="button"
@@ -1036,10 +1177,17 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                 <div className="flex items-center justify-between border-b pb-2 border-gray-100">
                   <h3 className="text-sm font-extrabold text-brand-800 flex items-center gap-2">
                     <i className="fa-solid fa-child-reaching text-blue-600"></i>
-                    <span>Anak & Keturunan </span>
+                    <span>Anak & Keturunan Kandung</span>
                   </h3>
                   <span className="text-[10px] font-bold text-gray-500">
                     3 dari {saudaraMahjubByAll ? "3" : "4"}
+                  </span>
+                </div>
+
+                <div className="p-2.5 bg-blue-50/70 rounded-xl border border-blue-100 text-[11px] text-blue-900 leading-relaxed flex items-start gap-2">
+                  <i className="fa-solid fa-circle-info text-blue-600 mt-0.5 shrink-0"></i>
+                  <span>
+                    <strong>Catatan:</strong> Hanya anak kandung mayit yang berhak mendapat jatah waris, anak tiri dan anak angkat bukanlah ahli waris syar'i.
                   </span>
                 </div>
 
@@ -1666,10 +1814,10 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
             {/* Tombol Aksi & Navigasi Langkah (Lanjut ke... & Kembali ke...) - Diletakkan tepat di bawah widget kaidah hajb */}
             <div className="pt-1">
               {currentStep === 1 && (
-                <div className="space-y-2">
+                <div>
                   <button
                     type="button"
-                    disabled={!isHartaEntered}
+                    disabled={!isStep1Valid}
                     onClick={() => {
                       setMaxUnlockedStep((prev) =>
                         Math.max(prev, 2) as 1 | 2 | 3 | 4,
@@ -1677,7 +1825,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       setCurrentStep(2);
                     }}
                     className={`w-full py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md ${
-                      isHartaEntered
+                      isStep1Valid
                         ? "bg-brand-600 hover:bg-brand-700 text-white cursor-pointer active:scale-[0.99]"
                         : "bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200"
                     }`}
@@ -1685,11 +1833,6 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     <span>Selanjutnya</span>
                     <i className="fa-solid fa-arrow-right text-xs"></i>
                   </button>
-                  {!isHartaEntered && (
-                    <p className="text-[11px] text-center text-gray-500">
-                      💡 Isi nominal Total Harta untuk membuka langkah selanjutnya
-                    </p>
-                  )}
                 </div>
               )}
 
@@ -1718,11 +1861,11 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               )}
 
               {currentStep === 3 && (
-                <div className="flex flex-col sm:flex-row items-center gap-2">
+                <div className="flex items-center gap-2">
                   <button
                     type="button"
                     onClick={() => setCurrentStep(2)}
-                    className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-xs hover:bg-gray-50 cursor-pointer"
+                    className="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-700 font-bold text-xs hover:bg-gray-50 cursor-pointer"
                   >
                     ← Kembali ke Ortu
                   </button>
@@ -1731,58 +1874,45 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       type="button"
                       disabled={isCalculating}
                       onClick={handleHitungClick}
-                      className="w-full sm:flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 via-emerald-600 to-teal-700 hover:from-brand-700 hover:to-emerald-700 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-80 disabled:cursor-wait transition-all active:scale-[0.99]"
+                      className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 via-emerald-600 to-teal-700 hover:from-brand-700 hover:to-emerald-700 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-80 disabled:cursor-wait transition-all active:scale-[0.99]"
                     >
                       {isCalculating ? (
                         <>
                           <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                          <span>Menghitung...</span>
+                          <span>
+                            {showResults ? "Memperbarui..." : "Sedang Menghitung..."}
+                          </span>
                         </>
                       ) : (
                         <>
                           <span>
                             {showResults
-                              ? "Hitung Ulang & Perbarui"
+                              ? isDirtyAfterCalc
+                                ? "Perbarui Hasil"
+                                : "Hitung Ulang"
                               : "Selesai & Lihat Hasil"}
                           </span>
-                          <i className="fa-solid fa-calculator text-[10px]"></i>
+                          <i
+                            className={`fa-solid ${
+                              showResults ? "fa-rotate" : "fa-calculator"
+                            } text-[10px]`}
+                          ></i>
                         </>
                       )}
                     </button>
                   ) : (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setMaxUnlockedStep((prev) =>
-                            Math.max(prev, 4) as 1 | 2 | 3 | 4,
-                          );
-                          setCurrentStep(4);
-                        }}
-                        className="w-full sm:flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md cursor-pointer"
-                      >
-                        Lanjut ke Saudara →
-                      </button>
-                      <button
-                        type="button"
-                        disabled={isCalculating}
-                        onClick={handleHitungClick}
-                        className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 font-bold text-xs cursor-pointer flex items-center justify-center gap-1.5 transition-colors disabled:opacity-80"
-                        title="Selesai & hitung tanpa mengisi saudara atau kerabat"
-                      >
-                        {isCalculating ? (
-                          <>
-                            <span className="w-3 h-3 border-2 border-emerald-700/30 border-t-emerald-700 rounded-full animate-spin"></span>
-                            <span>Sedang Menghitung...</span>
-                          </>
-                        ) : (
-                          <>
-                            <span>Selesai & Lihat Hasil</span>
-                            <i className="fa-solid fa-calculator text-[10px]"></i>
-                          </>
-                        )}
-                      </button>
-                    </>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMaxUnlockedStep((prev) =>
+                          Math.max(prev, 4) as 1 | 2 | 3 | 4,
+                        );
+                        setCurrentStep(4);
+                      }}
+                      className="flex-1 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1"
+                    >
+                      <span>Lanjut ke Saudara →</span>
+                    </button>
                   )}
                 </div>
               )}
@@ -1805,16 +1935,24 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     {isCalculating ? (
                       <>
                         <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
-                        <span>Sedang Menghitung...</span>
+                        <span>
+                          {showResults ? "Memperbarui..." : "Sedang Menghitung..."}
+                        </span>
                       </>
                     ) : (
                       <>
                         <span>
                           {showResults
-                            ? "Hitung Ulang & Perbarui Hasil"
+                            ? isDirtyAfterCalc
+                              ? "Perbarui Hasil Waris"
+                              : "Hitung Ulang & Lihat Hasil"
                             : "Selesai & Lihat Hasil"}
                         </span>
-                        <i className="fa-solid fa-calculator text-xs"></i>
+                        <i
+                          className={`fa-solid ${
+                            showResults ? "fa-rotate" : "fa-calculator"
+                          } text-xs`}
+                        ></i>
                       </>
                     )}
                   </button>
@@ -1827,22 +1965,51 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
           {showResults && activeCalculation && (
             <div
               id="hasilCardSection"
-              className="lg:col-span-5 space-y-4 sm:space-y-5 animate-in fade-in slide-in-from-right-8 duration-500"
+              className={`lg:col-span-5 space-y-4 sm:space-y-5 animate-in fade-in slide-in-from-right-8 duration-500 transition-opacity ${
+                isCalculating ? "opacity-60 pointer-events-none" : "opacity-100"
+              }`}
             >
               {/* Notifikasi jika data form diubah setelah kalkulasi */}
               {isDirtyAfterCalc && (
-                <div className="p-3 sm:p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-300 flex items-center justify-between gap-3 text-amber-950 shadow-xs animate-in fade-in duration-300">
-                  <div className="flex items-center gap-2 text-xs font-semibold min-w-0">
-                    <i className="fa-solid fa-arrows-rotate text-amber-600 animate-spin"></i>
-                    <span className="truncate">Data ada yang diubah. Hasil belum diperbarui.</span>
+                <div className="p-3 sm:p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-300 flex items-center justify-between gap-2.5 sm:gap-3 text-amber-950 shadow-xs animate-in fade-in duration-300">
+                  <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+                    <div className="w-7 h-7 rounded-xl bg-amber-100 border border-amber-200/80 text-amber-700 flex items-center justify-center shrink-0">
+                      <i
+                        className={`fa-solid fa-arrows-rotate text-xs ${
+                          isCalculating ? "animate-spin text-brand-600" : ""
+                        }`}
+                      ></i>
+                    </div>
+                    <div className="min-w-0 leading-tight sm:leading-normal">
+                      <span className="block sm:inline text-xs font-bold text-amber-950">
+                        Data ada yang diubah.
+                      </span>{" "}
+                      <span className="block sm:inline text-[11px] sm:text-xs text-amber-900/90 font-medium sm:font-bold">
+                        Hasil belum diperbarui.
+                      </span>
+                    </div>
                   </div>
                   <button
                     type="button"
                     disabled={isCalculating}
                     onClick={handleHitungClick}
-                    className="px-3 py-1.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-extrabold text-xs shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 active:scale-95 transition-all"
+                    className={`px-3 sm:px-3.5 py-2 rounded-xl text-white font-extrabold text-xs shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 transition-all ${
+                      isCalculating
+                        ? "bg-brand-700 opacity-90 cursor-wait scale-95"
+                        : "bg-brand-600 hover:bg-brand-700 active:scale-95 hover:shadow-md"
+                    }`}
                   >
-                    <span>Perbarui</span>
+                    {isCalculating ? (
+                      <>
+                        <span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin"></span>
+                        <span>Memperbarui...</span>
+                      </>
+                    ) : (
+                      <>
+                        <i className="fa-solid fa-arrows-rotate text-[11px]"></i>
+                        <span>Perbarui</span>
+                      </>
+                    )}
                   </button>
                 </div>
               )}
@@ -1870,7 +2037,11 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               {/* Summary Card */}
               <div
                 id="ringkasanHartaCard"
-                className="bg-white text-gray-900 p-4 sm:p-6 rounded-3xl shadow-xl border border-emerald-400/30 space-y-3.5 scroll-mt-20 md:scroll-mt-24"
+                className={`bg-white text-gray-900 p-4 sm:p-6 rounded-3xl shadow-xl border space-y-3.5 scroll-mt-20 md:scroll-mt-24 transition-all duration-700 ${
+                  justUpdated
+                    ? "ring-4 ring-emerald-400 border-emerald-500 shadow-2xl"
+                    : "border-emerald-400/30"
+                }`}
               >
                 <div className="flex items-center justify-between border-b pb-2.5 border-gray-100 gap-2">
                   <h3 className="text-sm sm:text-base font-extrabold text-brand-900 flex items-center gap-2">
@@ -1881,9 +2052,20 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                   </h3>
                   <span
                     id="statusFaroidBadge"
-                    className="text-[11px] sm:text-xs bg-brand-100 text-brand-800 font-bold px-2.5 py-1 rounded-full whitespace-nowrap"
+                    className={`text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+                      justUpdated
+                        ? "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-400"
+                        : "bg-brand-100 text-brand-800"
+                    }`}
                   >
-                    {activeCalculation.badgeStatus}
+                    {justUpdated ? (
+                      <>
+                        <i className="fa-solid fa-check text-emerald-600 text-[10px]"></i>
+                        <span>Hasil Diperbarui</span>
+                      </>
+                    ) : (
+                      activeCalculation.badgeStatus
+                    )}
                   </span>
                 </div>
 
@@ -1946,6 +2128,11 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     <span>Asal Masalah:</span>
                     <span className="font-mono font-bold text-gray-800">
                       {activeCalculation.asalMasalah}
+                      {activeCalculation.aulMasalah && (
+                        <span className="text-amber-700 font-semibold ml-1">
+                          (Ber-'Aul: {activeCalculation.aulMasalah})
+                        </span>
+                      )}
                       {activeCalculation.tashihMasalah && (
                         <span className="text-brand-700 font-semibold ml-1">
                           (Tashih: {activeCalculation.tashihMasalah})
@@ -1957,7 +2144,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               </div>
 
               {/* Detailed Breakdown List Card */}
-              <div className="bg-white text-gray-900 p-4 sm:p-6 rounded-3xl shadow-xl border border-emerald-400/30 space-y-3">
+              <div
+                id="rincianAhliWarisCard"
+                className={`bg-white text-gray-900 p-4 sm:p-6 rounded-3xl shadow-xl border space-y-3 scroll-mt-20 md:scroll-mt-24 transition-all duration-700 ${
+                  justUpdated
+                    ? "ring-4 ring-emerald-400 border-emerald-500 shadow-2xl"
+                    : "border-emerald-400/30"
+                }`}
+              >
                 <div className="flex items-center justify-between border-b pb-2.5 border-gray-100">
                   <h4 className="text-xs sm:text-sm font-extrabold text-gray-900 flex items-center gap-1.5">
                     <span>Rincian Bagian Ahli Waris</span>
