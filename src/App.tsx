@@ -4,6 +4,7 @@
  */
 
 import React, { useState, useCallback } from 'react';
+import { ThemeProvider } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { EducationalMethod } from './components/EducationalMethod';
@@ -27,27 +28,32 @@ export default function App() {
   }, []);
 
   return (
-    <div className="min-h-screen text-gray-800 antialiased selection:bg-brand-500 selection:text-white">
-      {/* Sticky Navigation */}
-      <Navbar />
+    <ThemeProvider>
+      <div className="min-h-screen text-gray-800 dark:text-slate-100 antialiased selection:bg-brand-500 selection:text-white transition-colors duration-300">
+        {/* Top of page anchor for 100% reliable scroll-to-top */}
+        <div id="page-top" className="absolute top-0 left-0 w-px h-px pointer-events-none opacity-0" aria-hidden="true" />
 
-      {/* Main Content Sections */}
-      <main>
-        <Hero />
-        <EducationalMethod />
-        <Experience />
-        <Education />
-        <Portfolio />
-        <MawarisCalculator onShowToast={showToast} />
-        <Contact onShowToast={showToast} />
-      </main>
+        {/* Sticky Navigation */}
+        <Navbar />
 
-      {/* Footer */}
-      <Footer />
+        {/* Main Content Sections */}
+        <main>
+          <Hero />
+          <EducationalMethod />
+          <Experience />
+          <Education />
+          <Portfolio />
+          <MawarisCalculator onShowToast={showToast} />
+          <Contact onShowToast={showToast} />
+        </main>
 
-      {/* Floating Utilities */}
-      <BackToTop />
-      <Toast message={toastMessage} />
-    </div>
+        {/* Footer */}
+        <Footer />
+
+        {/* Floating Utilities */}
+        <BackToTop />
+        <Toast message={toastMessage} />
+      </div>
+    </ThemeProvider>
   );
 }

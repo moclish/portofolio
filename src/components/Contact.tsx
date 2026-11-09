@@ -103,23 +103,23 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
   return (
     <section
       id="kontak"
-      className="py-20 bg-warmbg relative overflow-hidden scroll-mt-[5px]"
+      className="py-20 bg-warmbg dark:bg-slate-950 relative overflow-hidden scroll-mt-[5px] transition-colors duration-300"
     >
       {/* Decorative ambient background accents */}
-      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-brand-100/40 via-emerald-50/20 to-transparent pointer-events-none rounded-full blur-3xl -z-10" />
-      <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-sunshine-400/10 rounded-full blur-3xl pointer-events-none -z-10" />
+      <div className="absolute top-10 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-gradient-to-b from-brand-100/40 dark:from-brand-900/15 via-emerald-50/20 to-transparent pointer-events-none rounded-full blur-3xl -z-10" />
+      <div className="absolute -bottom-20 -right-20 w-80 h-80 bg-sunshine-400/10 dark:bg-amber-500/5 rounded-full blur-3xl pointer-events-none -z-10" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100/80 text-brand-800 text-xs font-bold tracking-wide uppercase border border-emerald-200 shadow-xs mb-3">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-100/80 dark:bg-emerald-950/80 text-brand-800 dark:text-emerald-300 text-xs font-bold tracking-wide uppercase border border-emerald-200 dark:border-emerald-800 shadow-xs mb-3">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             Silaturahmi & Kolaborasi
           </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white tracking-tight">
             Kontak Saya
           </h2>
-          <p className="text-gray-600 mt-3.5 text-sm sm:text-base leading-relaxed">
+          <p className="text-gray-600 dark:text-slate-300 mt-3.5 text-sm sm:text-base leading-relaxed">
             Terbuka untuk silaturahmi, konsultasi fikih waris atau kerja sama
             akademis
           </p>
@@ -129,24 +129,24 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-start">
           {/* Left Column: Contact Cards & Direct Channels (5 cols) */}
           <div className="lg:col-span-5 space-y-4">
-            {/* Live Consultation Status Badge (Symmetrical & Mobile Friendly) */}
-            <div className="bg-gradient-to-r from-emerald-50 to-teal-50/80 border border-emerald-200/90 rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 shadow-xs">
+            {/* Live Consultation Status Badge */}
+            <div className="bg-gradient-to-r from-emerald-50 to-teal-50/80 dark:from-slate-900 dark:to-slate-900/90 border border-emerald-200/90 dark:border-slate-800 rounded-2xl p-3.5 sm:p-4 flex items-center justify-between gap-3 shadow-xs">
               <div className="flex items-center gap-3 min-w-0">
                 <span className="relative flex h-3.5 w-3.5 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
                 </span>
                 <div className="min-w-0">
-                  <h4 className="text-xs font-bold text-emerald-950 uppercase tracking-wider truncate">
+                  <h4 className="text-xs font-bold text-emerald-950 dark:text-emerald-300 uppercase tracking-wider truncate">
                     Mari Berdiskusi
                   </h4>
-                  <p className="text-[11px] sm:text-xs text-emerald-800 font-medium truncate">
+                  <p className="text-[11px] sm:text-xs text-emerald-800 dark:text-emerald-400 font-medium truncate">
                     Respon aktif via WhatsApp
                   </p>
                 </div>
               </div>
               <div className="shrink-0 flex items-center justify-center">
-                <span className="text-[11px] font-bold bg-white/95 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200 shadow-2xs whitespace-nowrap text-center">
+                <span className="text-[11px] font-bold bg-white/95 dark:bg-slate-800 text-emerald-700 dark:text-emerald-300 px-3 py-1.5 rounded-full border border-emerald-200 dark:border-slate-700 shadow-2xs whitespace-nowrap text-center">
                   1x24 Jam
                 </span>
               </div>
@@ -157,44 +157,44 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
               href={`https://wa.me/${PROFILE_INFO.whatsappNumber}?text=${directWaGreeting}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="group block p-4 sm:p-5 rounded-2xl bg-white border border-gray-200/90 hover:border-emerald-400 hover:shadow-md transition-all duration-300 relative overflow-hidden"
+              className="group block p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 hover:shadow-md transition-all duration-300 relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform"></div>
+              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 dark:bg-emerald-950/30 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform"></div>
               <div className="flex items-center justify-between relative z-10 gap-3">
                 <div className="flex items-center gap-3.5 min-w-0">
                   <div className="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-2xl shadow-md shadow-emerald-500/20 group-hover:scale-105 group-hover:bg-emerald-600 transition-all shrink-0">
                     <i className="fa-brands fa-whatsapp"></i>
                   </div>
                   <div className="min-w-0">
-                    <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
+                    <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider block">
                       WhatsApp
                     </span>
-                    <span className="text-base sm:text-lg font-bold text-gray-900 group-hover:text-brand-600 transition-colors block truncate">
+                    <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors block truncate">
                       {PROFILE_INFO.whatsappDisplay}
                     </span>
-                    <span className="text-xs text-emerald-600 font-medium flex items-center gap-1.5 mt-0.5">
+                    <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5 mt-0.5">
                       <i className="fa-regular fa-comment-dots"></i> Buka
                       obrolan instan
                     </span>
                   </div>
                 </div>
-                <div className="w-8 h-8 rounded-full bg-emerald-50 group-hover:bg-brand-600 group-hover:text-white text-brand-700 flex items-center justify-center text-xs transition-colors shrink-0">
+                <div className="w-8 h-8 rounded-full bg-emerald-50 dark:bg-slate-800 group-hover:bg-brand-600 group-hover:text-white text-brand-700 dark:text-emerald-400 flex items-center justify-center text-xs transition-colors shrink-0">
                   <i className="fa-solid fa-arrow-up-right-from-square"></i>
                 </div>
               </div>
             </a>
 
             {/* Email Card (Inline Symmetrical Layout with Copy Button) */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-gray-200/90 hover:border-amber-400 hover:shadow-md transition-all duration-300 flex items-center justify-between gap-3">
+            <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 hover:shadow-md transition-all duration-300 flex items-center justify-between gap-3">
               <div className="flex items-center gap-3.5 min-w-0">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-600 text-white flex items-center justify-center text-xl shadow-md shadow-amber-500/20 shrink-0">
                   <i className="fa-regular fa-envelope"></i>
                 </div>
                 <div className="min-w-0">
-                  <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
+                  <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider block">
                     Email
                   </span>
-                  <span className="text-xs sm:text-sm font-bold text-gray-900 truncate block font-mono">
+                  <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white truncate block font-mono">
                     {PROFILE_INFO.email}
                   </span>
                 </div>
@@ -205,7 +205,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                 className={`shrink-0 py-2 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
                   isCopied
                     ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                    : "bg-amber-50/80 hover:bg-amber-100 text-amber-900 border-amber-200/80 shadow-2xs"
+                    : "bg-amber-50/80 dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-300 border-amber-200/80 dark:border-slate-700 shadow-2xs"
                 }`}
                 title="Salin Alamat Email"
               >
@@ -217,31 +217,31 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
             </div>
 
             {/* Domisili Card */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-gray-200/90 shadow-xs flex items-center gap-3.5">
+            <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 shadow-xs flex items-center gap-3.5">
               <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl shadow-md shadow-blue-600/20 shrink-0">
                 <i className="fa-solid fa-location-dot"></i>
               </div>
               <div className="min-w-0">
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-wider block">
+                <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider block">
                   Domisili
                 </span>
-                <span className="text-sm sm:text-base font-extrabold text-gray-900 block truncate">
+                <span className="text-sm sm:text-base font-extrabold text-gray-900 dark:text-white block truncate">
                   {PROFILE_INFO.location}
                 </span>
               </div>
             </div>
 
-            {/* Media Sosial & Kanal Dakwah Resmi (Menyeimbangkan Tinggi Kolom) */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-gray-200/90 shadow-xs space-y-3">
+            {/* Media Sosial & Kanal Dakwah Resmi */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 shadow-xs space-y-3">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-brand-700 flex items-center justify-center text-sm shrink-0">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-slate-800 text-brand-700 dark:text-emerald-400 flex items-center justify-center text-sm shrink-0">
                   <i className="fa-solid fa-share-nodes"></i>
                 </div>
                 <div>
-                  <h5 className="text-xs font-bold text-gray-900 uppercase tracking-wider">
+                  <h5 className="text-xs font-bold text-gray-900 dark:text-white uppercase tracking-wider">
                     Media Sosial
                   </h5>
-                  <p className="text-[11px] text-gray-500">
+                  <p className="text-[11px] text-gray-500 dark:text-slate-400">
                     Temukan saya di media sosial
                   </p>
                 </div>
@@ -253,14 +253,14 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                   href={PROFILE_INFO.facebookUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-blue-50/60 hover:bg-blue-100/70 border border-blue-100/90 transition-all flex items-center justify-between group"
+                  className="p-3 rounded-xl bg-blue-50/60 dark:bg-slate-800/80 hover:bg-blue-100/70 dark:hover:bg-slate-700 border border-blue-100/90 dark:border-slate-700 transition-all flex items-center justify-between group"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center text-sm shadow-2xs group-hover:scale-105 transition-transform shrink-0">
                       <i className="fa-brands fa-facebook-f"></i>
                     </div>
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-gray-900 block group-hover:text-blue-700 transition-colors">
+                      <span className="text-xs font-bold text-gray-900 dark:text-white block group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">
                         Facebook
                       </span>
                     </div>
@@ -273,14 +273,14 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                   href={PROFILE_INFO.instagramUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="p-3 rounded-xl bg-rose-50/60 hover:bg-rose-100/70 border border-rose-100/90 transition-all flex items-center justify-between group"
+                  className="p-3 rounded-xl bg-rose-50/60 dark:bg-slate-800/80 hover:bg-rose-100/70 dark:hover:bg-slate-700 border border-rose-100/90 dark:border-slate-700 transition-all flex items-center justify-between group"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center text-sm shadow-2xs group-hover:scale-105 transition-transform shrink-0">
                       <i className="fa-brands fa-instagram"></i>
                     </div>
                     <div className="min-w-0">
-                      <span className="text-xs font-bold text-gray-900 block group-hover:text-rose-700 transition-colors">
+                      <span className="text-xs font-bold text-gray-900 dark:text-white block group-hover:text-rose-700 dark:group-hover:text-rose-400 transition-colors">
                         Instagram
                       </span>
                     </div>
@@ -293,13 +293,13 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
 
           {/* Right Column: Modern Clean Form (7 cols) */}
           <div className="lg:col-span-7">
-            <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-200 shadow-xl relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl border border-gray-200 dark:border-slate-800 shadow-xl relative overflow-hidden transition-colors duration-300">
               {/* Form Title & Description */}
-              <div className="mb-6 pb-4 border-b border-gray-100">
-                <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900">
+              <div className="mb-6 pb-4 border-b border-gray-100 dark:border-slate-800">
+                <h3 className="text-xl sm:text-2xl font-extrabold text-gray-900 dark:text-white">
                   Kirim Pesan
                 </h3>
-                <p className="text-xs sm:text-sm text-gray-500 mt-1">
+                <p className="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">
                   Isi formulir di bawah ini untuk mengirimkan pesan via WhatsApp
                 </p>
               </div>
@@ -312,7 +312,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                 {/* Name & Organization */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                    <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1.5">
                       Nama Lengkap <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
@@ -326,15 +326,15 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                         value={senderName}
                         onChange={(e) => setSenderName(e.target.value)}
                         placeholder="Ahmad Fauzi"
-                        className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-200 bg-warmbg/40 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none text-sm transition-all text-gray-900 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-warmbg/40 dark:bg-slate-800/70 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none text-sm transition-all text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 disabled:opacity-60 disabled:cursor-not-allowed"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                    <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1.5">
                       Lembaga/Instansi{" "}
-                      <span className="text-gray-400 font-normal">
+                      <span className="text-gray-400 dark:text-slate-500 font-normal">
                         (Opsional)
                       </span>
                     </label>
@@ -348,7 +348,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                         value={senderOrg}
                         onChange={(e) => setSenderOrg(e.target.value)}
                         placeholder="MAS Nurul Huda"
-                        className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-200 bg-warmbg/40 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none text-sm transition-all text-gray-900 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="w-full pl-9 pr-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-warmbg/40 dark:bg-slate-800/70 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none text-sm transition-all text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 disabled:opacity-60 disabled:cursor-not-allowed"
                       />
                     </div>
                   </div>
@@ -356,7 +356,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
 
                 {/* Topic Selection */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-700 mb-1.5">
+                  <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1.5">
                     Subjek <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
@@ -364,18 +364,18 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                       disabled={isSending}
                       value={msgTopic}
                       onChange={(e) => setMsgTopic(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-warmbg/40 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none text-sm transition-all text-gray-900 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-warmbg/40 dark:bg-slate-800/70 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none text-sm transition-all text-gray-900 dark:text-white cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
                     >
-                      <option value="Konsultasi Fikih Waris (Faroid)">
+                      <option value="Konsultasi Fikih Waris (Faroid)" className="dark:bg-slate-800">
                         ⚖️ Konsultasi Fikih Waris
                       </option>
-                      <option value="Kerja Sama Akademik & Lembaga">
+                      <option value="Kerja Sama Akademik & Lembaga" className="dark:bg-slate-800">
                         🤝 Kerja Sama Akademik
                       </option>
-                      <option value="Pertanyaan Umum">
+                      <option value="Pertanyaan Umum" className="dark:bg-slate-800">
                         💬 Pertanyaan Umum
                       </option>
-                      <option value="Kritik & Masukan Terkait Kalkulator Waris">
+                      <option value="Kritik & Masukan Terkait Kalkulator Waris" className="dark:bg-slate-800">
                         ⚙️ Masukan Terkait Aplikasi Kalkulator Waris
                       </option>
                     </select>
@@ -385,11 +385,11 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                 {/* Message Field */}
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <label className="block text-xs font-bold text-gray-700">
+                    <label className="block text-xs font-bold text-gray-700 dark:text-slate-300">
                       Pesan <span className="text-red-500">*</span>
                     </label>
                     {senderMessage.length > 0 && (
-                      <span className="text-[11px] text-gray-400">
+                      <span className="text-[11px] text-gray-400 dark:text-slate-500">
                         {senderMessage.length} karakter
                       </span>
                     )}
@@ -401,7 +401,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                     value={senderMessage}
                     onChange={(e) => setSenderMessage(e.target.value)}
                     placeholder="Tulis pesan Anda di sini..."
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-warmbg/40 focus:bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none text-sm transition-all text-gray-900 leading-relaxed resize-y disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-warmbg/40 dark:bg-slate-800/70 focus:bg-white dark:focus:bg-slate-800 focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none text-sm transition-all text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-slate-500 leading-relaxed resize-y disabled:opacity-60 disabled:cursor-not-allowed"
                   ></textarea>
                 </div>
 
