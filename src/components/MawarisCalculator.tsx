@@ -565,6 +565,34 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
     }
   }, [inputState]);
 
+  const scrollToRingkasanHarta = () => {
+    const doScroll = () => {
+      const targetEl =
+        document.getElementById("ringkasanHartaCard") ||
+        document.getElementById("hasilCardSection");
+      if (!targetEl) return;
+
+      const navEl = document.getElementById("navbar");
+      const navHeight = navEl ? navEl.getBoundingClientRect().height : 80;
+      const topBuffer = 16; // Jarak rapi dan estetik di atas div ringkasan harta
+      const elementTop = targetEl.getBoundingClientRect().top + window.pageYOffset;
+      const targetY = Math.max(0, elementTop - navHeight - topBuffer);
+
+      window.scrollTo({
+        top: targetY,
+        behavior: "smooth",
+      });
+    };
+
+    // Eksekusi segera di frame berikutnya setelah render
+    requestAnimationFrame(() => {
+      doScroll();
+      // Penyesuaian halus setelah DOM settled (mengantisipasi banner 'data berubah' unmount & reflow layout)
+      setTimeout(doScroll, 80);
+      setTimeout(doScroll, 220);
+    });
+  };
+
   const handleHitungClick = () => {
     if (!isHartaEntered) {
       onShowToast("Mohon masukkan nominal Total Harta terlebih dahulu.");
@@ -606,23 +634,9 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
         onShowToast("Hasil perhitungan waris berhasil dihitung!");
       }
 
-      // Smooth scroll to 10px above div ringkasan harta
-      setTimeout(() => {
-        const targetEl =
-          document.getElementById("ringkasanHartaCard") ||
-          document.getElementById("hasilCardSection");
-        if (targetEl) {
-          const navbarHeight = window.innerWidth < 768 ? 72 : 80;
-          const targetOffset = 10;
-          const targetY =
-            targetEl.getBoundingClientRect().top +
-            window.scrollY -
-            navbarHeight -
-            targetOffset;
-          window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
-        }
-      }, 200);
-    }, 650);
+      // Smooth scroll tepat ke atas div ringkasan harta
+      scrollToRingkasanHarta();
+    }, 200);
   };
 
   return (
@@ -637,10 +651,10 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
             <i className="fa-solid fa-calculator"></i> Tool Interaktif
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight">
-            Kalkulator Waris
+            Kalkulator Waris Syar'i
           </h2>
           <p className="text-emerald-100/80 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto">
-            Sistem kalkulasi waris lengkap dan komprehensif
+            Sistem kalkulasi waris lengkap dan komprehensif sesuai dengan syari'at islam
           </p>
         </div>
 
@@ -1975,8 +1989,8 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                   <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
                     <div className="w-7 h-7 rounded-xl bg-amber-100 dark:bg-amber-900/60 border border-amber-200/80 dark:border-amber-700/80 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
                       <i
-                        className={`fa-solid fa-arrows-rotate text-xs ${
-                          isCalculating ? "animate-spin text-brand-600 dark:text-emerald-400" : ""
+                        className={`fa-solid fa-circle-exclamation text-xs ${
+                          isCalculating ? "animate-pulse text-amber-600 dark:text-amber-400" : ""
                         }`}
                       ></i>
                     </div>

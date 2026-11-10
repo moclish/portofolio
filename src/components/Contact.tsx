@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { PROFILE_INFO } from "../data/profileData";
+import { PROFILE_INFO, getDecodedWhatsAppNumber } from "../data/profileData";
 
 interface ContactProps {
   onShowToast: (msg: string) => void;
@@ -52,6 +52,19 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
     }
   };
 
+  const handleDirectWhatsApp = () => {
+    const num = getDecodedWhatsAppNumber();
+    if (!num) {
+      onShowToast("Gagal memproses nomor kontak. Silakan hubungi via email.");
+      return;
+    }
+    const greeting = encodeURIComponent(
+      "Assalamu'alaikum Ust. Sadono, Lc., saya ingin ..."
+    );
+    // Buka WhatsApp di tab baru tanpa meninggalkan jejak tautan statis di DOM
+    window.open(`https://wa.me/${num}?text=${greeting}`, "_blank", "noopener,noreferrer");
+  };
+
   const handleContactSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -66,11 +79,17 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
       return;
     }
 
+    const num = getDecodedWhatsAppNumber();
+    if (!num) {
+      onShowToast("Gagal memproses kontak WhatsApp. Silakan hubungi via email.");
+      return;
+    }
+
     setIsSending(true);
 
     const orgLine = senderOrg.trim() ? ` dari *${senderOrg.trim()}*` : "";
     const text = `Assalamu'alaikum Ust. Sadono, Lc.\n\nPerkenalkan saya *${senderName.trim()}*${orgLine}.\n\n*Topik:* ${msgTopic}\n*Pesan:*\n${senderMessage.trim()}\n\nTerima kasih.`;
-    const waUrl = `https://wa.me/${PROFILE_INFO.whatsappNumber}?text=${encodeURIComponent(text)}`;
+    const waUrl = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
 
     // Buka WhatsApp di tab baru secara langsung (terhindar dari pemblokir popup)
     window.open(waUrl, "_blank", "noopener,noreferrer");
@@ -95,10 +114,6 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
       }, 3500);
     }, 700);
   };
-
-  const directWaGreeting = encodeURIComponent(
-    "Assalamu'alaikum Ust. Sadono, Lc., saya ingin bersilaturahmi dan berdiskusi.",
-  );
 
   return (
     <section
@@ -152,12 +167,11 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
               </div>
             </div>
 
-            {/* WhatsApp Card */}
-            <a
-              href={`https://wa.me/${PROFILE_INFO.whatsappNumber}?text=${directWaGreeting}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group block p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 hover:shadow-md transition-all duration-300 relative overflow-hidden"
+            {/* WhatsApp Card (Anti-Scraping Protected - Dynamic JS Event) */}
+            <button
+              type="button"
+              onClick={handleDirectWhatsApp}
+              className="w-full text-left group block p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 hover:border-emerald-400 dark:hover:border-emerald-500 hover:shadow-md transition-all duration-300 relative overflow-hidden cursor-pointer"
             >
               <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 dark:bg-emerald-950/30 rounded-bl-full -z-0 opacity-50 group-hover:scale-110 transition-transform"></div>
               <div className="flex items-center justify-between relative z-10 gap-3">
@@ -166,15 +180,16 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                     <i className="fa-brands fa-whatsapp"></i>
                   </div>
                   <div className="min-w-0">
-                    <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider block">
+                    <span className="text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider block mb-0.5">
                       WhatsApp
                     </span>
-                    <span className="text-base sm:text-lg font-bold text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors block truncate">
-                      {PROFILE_INFO.whatsappDisplay}
-                    </span>
+                    <div className="text-base sm:text-lg font-bold text-gray-900 dark:text-white group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors flex items-center gap-1.5 font-mono">
+                      <span>+62 822</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 tracking-wider text-sm sm:text-base select-none">••••</span>
+                      <span>3144</span>
+                    </div>
                     <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium flex items-center gap-1.5 mt-0.5">
-                      <i className="fa-regular fa-comment-dots"></i> Buka
-                      obrolan instan
+                      <i className="fa-regular fa-comment-dots"></i> Buka obrolan instan
                     </span>
                   </div>
                 </div>
@@ -182,7 +197,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
                   <i className="fa-solid fa-arrow-up-right-from-square"></i>
                 </div>
               </div>
-            </a>
+            </button>
 
             {/* Email Card (Inline Symmetrical Layout with Copy Button) */}
             <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 hover:border-amber-400 dark:hover:border-amber-500 hover:shadow-md transition-all duration-300 flex items-center justify-between gap-3">

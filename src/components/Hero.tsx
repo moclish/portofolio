@@ -34,7 +34,7 @@ export const Hero: React.FC = () => {
               </span>{' '}
               kepada{' '}
               <span className="bg-gradient-to-r from-brand-600 via-emerald-500 to-sunshine-500 dark:from-brand-400 dark:via-emerald-400 dark:to-sunshine-400 bg-clip-text text-transparent inline-block">
-                yang berhak..."
+                yang berhak"
               </span>
             </h1>
 

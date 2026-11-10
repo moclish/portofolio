@@ -30,8 +30,9 @@ export const PROFILE_INFO = {
   spec: "Spesialis Fikih Waris",
   location: "Paser, Kalimantan Timur",
   school: "MAS AL FURQON, Kalimantan Timur",
-  whatsappNumber: "6282250803144",
-  whatsappDisplay: "+62 822-5080-3144",
+  // Obfuscated WhatsApp token untuk perlindungan dari bot crawler / web scraping
+  whatsappToken: "NjI4MjI1MDgwMzE0NA==",
+  whatsappDisplay: "+62 822 •••• 3144",
   email: "sadono@madrasah.kemenag.go.id",
   facebookUrl: "https://facebook.com/moclish",
   facebookFollowers: "1.8K+ Pengikut",
@@ -43,6 +44,18 @@ export const PROFILE_INFO = {
   // Jika dikosongkan '', akan otomatis menggunakan ikon monogram 'س' yang elegan
   logoUrl: "1pXTxsYy_hngtUV6WlF4lPVj5e0eGPfEZ",
   faviconUrl: "13W1EyYpOlx6pm_-3dYvCcii4SnqquDFB",
+};
+
+/**
+ * Helper untuk mendekode nomor WhatsApp saat interaksi pengguna (klik/submit)
+ * Mencegah nomor terekspos dalam bentuk teks mentah pada HTML / DOM
+ */
+export const getDecodedWhatsAppNumber = (): string => {
+  try {
+    return typeof atob !== "undefined" ? atob(PROFILE_INFO.whatsappToken) : "";
+  } catch {
+    return "";
+  }
 };
 
 export const EXPERIENCES: ExperienceItem[] = [

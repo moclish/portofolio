@@ -138,7 +138,7 @@ export const Navbar: React.FC = () => {
                 src={formattedLogoUrl}
                 alt={PROFILE_INFO.name}
                 onError={() => setLogoError(true)}
-                className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-xl sm:rounded-2xl object-cover shadow-md group-hover:scale-105 transition-transform border border-emerald-100 dark:border-slate-700 bg-white dark:bg-slate-800 shrink-0"
+                className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 object-contain group-hover:scale-105 transition-transform shrink-0"
               />
             ) : (
               <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-brand-600 to-sunshine-500 flex items-center justify-center text-white font-bold text-base lg:text-xl shadow-md group-hover:scale-105 transition-transform shrink-0">
@@ -233,10 +233,7 @@ export const Navbar: React.FC = () => {
                 }`}
               >
                 <i className="fa-regular fa-paper-plane text-xs"></i>
-                <span>
-                  Kontak
-                  <span className="hidden xl:inline"> Saya</span>
-                </span>
+                <span>Kontak</span>
               </a>
             </div>
           </div>
@@ -324,7 +321,7 @@ export const Navbar: React.FC = () => {
                   : 'bg-brand-600 text-white'
               }`}
             >
-              Kontak Saya
+              Kontak
             </a>
           </div>
         </div>
