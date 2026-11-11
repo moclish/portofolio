@@ -22,7 +22,7 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
   const handleCopyEmail = (email: string) => {
     const markSuccess = () => {
       setIsCopied(true);
-      onShowToast("Alamat email berhasil disalin ke clipboard!");
+      onShowToast("Alamat email berhasil disalin!");
       setTimeout(() => setIsCopied(false), 2500);
     };
 

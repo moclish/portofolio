@@ -1,6 +1,6 @@
 {
   "name": "Portofolio",
-  "description": "Website profil profesional yang menyediakan kalkulator waris syar'i interaktif oleh Sadono, Lc - Guru & Spesialis Fikih Waris.",
+  "description": "Website profil profesional yang terintegrasi dengan kalkulator waris interaktif",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

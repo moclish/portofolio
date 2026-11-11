@@ -336,6 +336,25 @@ html.dark #hasilCardSection .bg-amber-100 {
 #toast {
   position: fixed !important;
   z-index: 10001 !important;
+  max-width: 94vw !important;
+}
+
+@media (min-width: 640px) {
+  #toast {
+    max-width: 90vw !important;
+  }
+  #toast #toastMsg {
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 639px) {
+  #toast #toastMsg {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }
 
 
