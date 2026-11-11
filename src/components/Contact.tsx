@@ -217,17 +217,18 @@ export const Contact: React.FC<ContactProps> = ({ onShowToast }) => {
               <button
                 type="button"
                 onClick={() => handleCopyEmail(PROFILE_INFO.email)}
-                className={`shrink-0 py-2 px-3 sm:px-3.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                className={`shrink-0 rounded-xl text-xs font-bold transition-all duration-300 flex items-center justify-center cursor-pointer border ${
                   isCopied
-                    ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
-                    : "bg-amber-50/80 dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-300 border-amber-200/80 dark:border-slate-700 shadow-2xs"
+                    ? "px-3 py-1.5 sm:px-3 sm:py-2 gap-1.5 bg-emerald-600 text-white border-emerald-600 shadow-xs animate-in fade-in zoom-in-95"
+                    : "w-8 h-8 sm:w-9 sm:h-9 bg-amber-50/80 dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-700 text-amber-900 dark:text-amber-300 border-amber-200/80 dark:border-slate-700 shadow-2xs hover:scale-105 active:scale-95"
                 }`}
                 title="Salin Alamat Email"
+                aria-label="Salin Alamat Email"
               >
                 <i
-                  className={`fa-solid ${isCopied ? "fa-check text-xs" : "fa-copy text-xs"}`}
+                  className={`fa-solid ${isCopied ? "fa-check text-xs" : "fa-copy text-xs sm:text-sm"}`}
                 ></i>
-                <span>{isCopied ? "Tersalin" : "Salin"}</span>
+                {isCopied && <span className="animate-in fade-in duration-200">Tersalin</span>}
               </button>
             </div>
 

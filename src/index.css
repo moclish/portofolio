@@ -309,6 +309,33 @@ html.dark #hasilCardSection .bg-amber-100 {
   -webkit-transform: none !important;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Hardened fixed positioning for Back to Top button across all devices, specifically tablets */
+#backToTopBtn {
+  position: fixed !important;
+  bottom: 1.5rem !important;
+  right: 1.5rem !important;
+  z-index: 9990 !important;
+  transform: none !important;
+  -webkit-transform: none !important;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@media (max-width: 640px) {
+  #backToTopBtn {
+    bottom: 1rem !important;
+    right: 1rem !important;
+  }
+}
+
+/* Hardened fixed positioning and high-priority z-index for Toast notification */
+#toast {
+  position: fixed !important;
+  z-index: 10001 !important;
 }
 
 

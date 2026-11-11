@@ -122,10 +122,10 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-[100] w-full glass-card border-b border-emerald-100/60 dark:border-slate-800/80 shadow-sm transition-all duration-300"
+      className="fixed top-0 left-0 right-0 z-[100] w-full glass-card border-b border-emerald-100/60 dark:border-slate-800/80 shadow-sm transition-[background-color,border-color,box-shadow] duration-300"
       id="navbar"
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-5 lg:px-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-3.5 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           {/* Brand Logo / Title */}
           <a

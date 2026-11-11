@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
@@ -19,12 +19,23 @@ import { Toast } from './components/Toast';
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const showToast = useCallback((msg: string) => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
     setToastMessage(msg);
-    setTimeout(() => {
+    toastTimerRef.current = setTimeout(() => {
       setToastMessage(null);
-    }, 3000);
+    }, 3200);
+  }, []);
+
+  const closeToast = useCallback(() => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
+    setToastMessage(null);
   }, []);
 
   return (
@@ -52,7 +63,7 @@ export default function App() {
 
         {/* Floating Utilities */}
         <BackToTop />
-        <Toast message={toastMessage} />
+        <Toast message={toastMessage} onClose={closeToast} />
       </div>
     </ThemeProvider>
   );
