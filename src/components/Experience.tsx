@@ -4,8 +4,8 @@
  */
 
 import React from 'react';
-import { EXPERIENCES } from '../data/profileData';
-import { FaIcon } from './FaIcon';
+import { EXPERIENCES } from '../data/careerData';
+import { FaIcon } from './LazyFaIcon';
 
 export const Experience: React.FC = () => {
   return (

@@ -5,7 +5,7 @@
 
 import React from "react";
 import { PROFILE_INFO } from "../data/profileData";
-import { FaIcon } from "./FaIcon";
+import { FaIcon } from "./LazyFaIcon";
 
 export const Footer: React.FC = () => {
   return (

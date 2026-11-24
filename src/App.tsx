@@ -36,6 +36,7 @@ interface DeferredSectionProps {
   id: string;
   label: string;
   fallbackClassName: string;
+  tag?: 'section' | 'footer';
   children: React.ReactNode;
 }
 
@@ -43,18 +44,19 @@ const DeferredSection: React.FC<DeferredSectionProps> = ({
   id,
   label,
   fallbackClassName,
+  tag = 'section',
   children,
 }) => {
-  const [shouldLoad, setShouldLoad] = useState(() => {
-    if (typeof window !== 'undefined' && window.location.hash === `#${id}`) {
-      return true;
-    }
-    return false;
-  });
+  const [shouldLoad, setShouldLoad] = useState(false);
   const sentinelRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
     if (shouldLoad) return;
+
+    if (window.location.hash === `#${id}`) {
+      setShouldLoad(true);
+      return;
+    }
 
     const handleHashOrLinkClick = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
@@ -89,7 +91,7 @@ const DeferredSection: React.FC<DeferredSectionProps> = ({
           observer.disconnect();
         }
       },
-      { rootMargin: '600px 0px', threshold: 0 },
+      { rootMargin: '850px 0px', threshold: 0 },
     );
 
     observer.observe(el);
@@ -101,14 +103,22 @@ const DeferredSection: React.FC<DeferredSectionProps> = ({
     };
   }, [id, shouldLoad]);
 
-  const fallback = (
-    <section
-      ref={sentinelRef}
-      id={id}
-      className={fallbackClassName}
-      aria-label={label}
-    />
-  );
+  const fallback =
+    tag === 'footer' ? (
+      <footer
+        ref={sentinelRef as React.RefObject<HTMLElement>}
+        id={id}
+        className={fallbackClassName}
+        aria-label={label}
+      />
+    ) : (
+      <section
+        ref={sentinelRef}
+        id={id}
+        className={fallbackClassName}
+        aria-label={label}
+      />
+    );
 
   if (!shouldLoad) {
     return fallback;
@@ -151,12 +161,20 @@ export default function App() {
         <main>
           <Hero />
           <EducationalMethod />
-          <Suspense fallback={<section id="pengalaman" className="min-h-[600px]" aria-label="Pengalaman Kerja" />}>
+          <DeferredSection
+            id="pengalaman"
+            label="Pengalaman Kerja"
+            fallbackClassName="py-20 bg-warmbg dark:bg-slate-950 min-h-[600px] border-t border-emerald-100/50 dark:border-slate-800"
+          >
             <Experience />
-          </Suspense>
-          <Suspense fallback={<section id="pendidikan" className="min-h-[500px]" aria-label="Riwayat Pendidikan" />}>
+          </DeferredSection>
+          <DeferredSection
+            id="pendidikan"
+            label="Riwayat Pendidikan"
+            fallbackClassName="py-20 bg-white dark:bg-slate-900 min-h-[500px] border-t border-emerald-100/50 dark:border-slate-800"
+          >
             <Education />
-          </Suspense>
+          </DeferredSection>
           <DeferredSection
             id="portofolio"
             label="Portofolio & Sertifikasi"
@@ -171,15 +189,24 @@ export default function App() {
           >
             <MawarisCalculator onShowToast={showToast} />
           </DeferredSection>
-          <Suspense fallback={<section id="kontak" className="min-h-[500px]" aria-label="Kontak" />}>
+          <DeferredSection
+            id="kontak"
+            label="Kontak"
+            fallbackClassName="py-20 bg-white dark:bg-slate-900 min-h-[500px] border-t border-emerald-100/50 dark:border-slate-800"
+          >
             <Contact onShowToast={showToast} />
-          </Suspense>
+          </DeferredSection>
         </main>
 
         {/* Footer */}
-        <Suspense fallback={<footer className="min-h-[160px]" aria-label="Footer" />}>
+        <DeferredSection
+          id="footer"
+          tag="footer"
+          label="Footer"
+          fallbackClassName="py-8 bg-emerald-50/40 dark:bg-slate-950 min-h-[120px] border-t border-emerald-100/80 dark:border-slate-800/80"
+        >
           <Footer />
-        </Suspense>
+        </DeferredSection>
 
         {/* Floating Utilities */}
         <BackToTop />

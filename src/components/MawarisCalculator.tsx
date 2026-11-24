@@ -12,7 +12,7 @@ import {
 } from "../types/mawaris";
 import { calculateMawaris } from "../utils/mawarisCalculator";
 import { parseMoney, formatRupiah } from "../utils/formatters";
-import { FaIcon, FaIconName } from "./FaIcon";
+import { FaIcon, FaIconName } from "./LazyFaIcon";
 
 interface MawarisCalculatorProps {
   onShowToast: (msg: string) => void;

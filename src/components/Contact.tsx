@@ -5,7 +5,7 @@
 
 import React, { useState } from "react";
 import { PROFILE_INFO, getDecodedWhatsAppNumber } from "../data/profileData";
-import { FaIcon } from "./FaIcon";
+import { FaIcon } from "./LazyFaIcon";
 
 interface ContactProps {
   onShowToast: (msg: string) => void;

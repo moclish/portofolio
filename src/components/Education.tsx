@@ -4,8 +4,8 @@
  */
 
 import React from 'react';
-import { EDUCATION_HISTORY } from '../data/profileData';
-import { FaIcon, FaIconName } from './FaIcon';
+import { EDUCATION_HISTORY } from '../data/careerData';
+import { FaIcon, FaIconName } from './LazyFaIcon';
 
 export const Education: React.FC = () => {
   const getEduFooterBadgeStyle = (idx: number) => {

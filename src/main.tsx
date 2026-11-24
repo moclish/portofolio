@@ -1,6 +1,10 @@
-import { createRoot } from 'react-dom/client';
-import '@fontsource-variable/plus-jakarta-sans';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
 
-createRoot(document.getElementById('root')!).render(<App />);
+const rootEl = document.getElementById('root')!;
+if (rootEl.hasChildNodes()) {
+  hydrateRoot(rootEl, <App />);
+} else {
+  createRoot(rootEl).render(<App />);
+}

@@ -11,7 +11,7 @@ import type { Swiper as SwiperType } from "swiper";
 import { PORTFOLIO_DATA } from "../data/portfolioData";
 import { PortfolioCategory, PortfolioItem } from "../types/portfolio";
 import { formatPortfolioImageUrl } from "../utils/imageHelper";
-import { FaIcon } from "./FaIcon";
+import { FaIcon } from "./LazyFaIcon";
 
 // Swiper core styles (code-split into Portfolio chunk)
 import "swiper/css";

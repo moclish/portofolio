@@ -1,13 +1,23 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
+import fs from "fs";
 import path from "path";
-import { defineConfig, type Plugin } from "vite";
+import { pathToFileURL } from "url";
+import { build, defineConfig, type Plugin } from "vite";
 
 function optimizeCriticalAssetsPlugin(): Plugin {
+  let outDir = "dist";
+  let profileAssetFileName = "";
+  let isSsrBuild = false;
+
   return {
     name: "optimize-critical-assets",
     apply: "build",
     enforce: "post",
+    configResolved(config) {
+      outDir = config.build.outDir || "dist";
+      isSsrBuild = Boolean(config.build.ssr);
+    },
     transformIndexHtml(html, ctx) {
       if (!ctx.bundle) return html;
 
@@ -34,8 +44,9 @@ function optimizeCriticalAssetsPlugin(): Plugin {
           }
         }
 
-        // Preload LCP Hero image (discovered otherwise only after React executes)
+        // Preload LCP Hero image
         if (/^assets\/profile-.*\.webp$/.test(fileName)) {
+          profileAssetFileName = fileName;
           preloadTags.push(
             `<link rel="preload" as="image" type="image/webp" fetchpriority="high" href="./${fileName}" />`,
           );
@@ -55,10 +66,74 @@ function optimizeCriticalAssetsPlugin(): Plugin {
 
       return result;
     },
+    async closeBundle() {
+      if (isSsrBuild) return;
+
+      const rootDir = path.resolve(import.meta.dirname, ".");
+      const distHtmlPath = path.resolve(rootDir, outDir, "index.html");
+      if (!fs.existsSync(distHtmlPath)) return;
+
+      const ssrTempDir = path.resolve(rootDir, "node_modules/.vite-prerender");
+
+      try {
+        await build({
+          configFile: false,
+          logLevel: "silent",
+          mode: "production",
+          base: "./",
+          plugins: [react()],
+          resolve: {
+            alias: {
+              "@": rootDir,
+            },
+          },
+          define: {
+            "process.env.NODE_ENV": '"production"',
+          },
+          build: {
+            ssr: path.resolve(rootDir, "src/entry-prerender.tsx"),
+            outDir: ssrTempDir,
+            emptyOutDir: true,
+            write: true,
+            rollupOptions: {
+              output: {
+                format: "esm",
+                entryFileNames: "entry-prerender.mjs",
+              },
+            },
+          },
+        });
+
+        const ssrEntryPath = path.resolve(ssrTempDir, "entry-prerender.mjs");
+        const { render } = (await import(
+          `${pathToFileURL(ssrEntryPath).href}?t=${Date.now()}`
+        )) as { render: () => string };
+
+        let appHtml = render().replace(
+          /^(?:<link\b[^>]*rel=["']preload["'][^>]*\/?>)+/i,
+          "",
+        );
+        if (profileAssetFileName) {
+          appHtml = appHtml.replace(
+            /(?:\.\/|\/)?assets\/profile-[^"'\s>]+\.webp/g,
+            `./${profileAssetFileName}`,
+          );
+        }
+
+        const html = fs.readFileSync(distHtmlPath, "utf8");
+        const prerenderedHtml = html.replace(
+          '<div id="root"></div>',
+          `<div id="root">${appHtml}</div>`,
+        );
+        fs.writeFileSync(distHtmlPath, prerenderedHtml, "utf8");
+      } finally {
+        fs.rmSync(ssrTempDir, { recursive: true, force: true });
+      }
+    },
   };
 }
 
-export default defineConfig(() => {
+export default defineConfig(({ command }) => {
   return {
     plugins: [react(), tailwindcss(), optimizeCriticalAssetsPlugin()],
     base: "./",
@@ -67,6 +142,13 @@ export default defineConfig(() => {
         "@": path.resolve(import.meta.dirname, "."),
       },
     },
+    ...(command === "build"
+      ? {
+          define: {
+            "process.env.NODE_ENV": '"production"',
+          },
+        }
+      : {}),
     build: {
       chunkSizeWarningLimit: 600,
     },
