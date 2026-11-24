@@ -5,6 +5,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { FaIcon } from './FaIcon';
 
 interface ToastProps {
   message: string | null;
@@ -19,8 +20,6 @@ export const Toast: React.FC<ToastProps> = ({ message, onClose }) => {
     setMounted(true);
   }, []);
 
-  // Simpan teks pesan terakhir agar selama transisi keluar (fade out 300ms),
-  // teks tidak berubah menjadi fallback atau berkedip teks lain
   useEffect(() => {
     if (message) {
       setDisplayedMessage(message);
@@ -43,6 +42,7 @@ export const Toast: React.FC<ToastProps> = ({ message, onClose }) => {
       id="toast"
       role="status"
       aria-live="polite"
+      aria-hidden={!message}
       onClick={onClose}
       className={`fixed top-20 sm:top-24 left-1/2 -translate-x-1/2 z-[10001] transition-all duration-300 ease-out bg-gray-900/95 dark:bg-slate-900/95 text-white px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-2xl shadow-2xl shadow-black/35 border ${
         isWarning
@@ -61,12 +61,10 @@ export const Toast: React.FC<ToastProps> = ({ message, onClose }) => {
             : 'bg-emerald-500/20 text-emerald-400'
         }`}
       >
-        <i
-          className={`fa-solid ${
-            isWarning ? 'fa-circle-exclamation' : 'fa-circle-check'
-          } text-xs sm:text-sm`}
-          id="toastIcon"
-        ></i>
+        <FaIcon
+          name={isWarning ? 'circle-exclamation' : 'circle-check'}
+          className="text-xs sm:text-sm"
+        />
       </div>
       <span
         id="toastMsg"
@@ -81,10 +79,10 @@ export const Toast: React.FC<ToastProps> = ({ message, onClose }) => {
             e.stopPropagation();
             onClose?.();
           }}
-          className="ml-1 sm:ml-2 text-slate-400 hover:text-white transition-colors p-1 shrink-0 flex items-center justify-center rounded-lg hover:bg-white/10"
+          className="ml-1 sm:ml-2 text-slate-300 hover:text-white transition-colors p-1 shrink-0 flex items-center justify-center rounded-lg hover:bg-white/10"
           aria-label="Tutup notifikasi"
         >
-          <i className="fa-solid fa-xmark text-xs"></i>
+          <FaIcon name="xmark" className="text-xs" />
         </button>
       )}
     </div>

@@ -3,19 +3,119 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { EducationalMethod } from './components/EducationalMethod';
-import { Experience } from './components/Experience';
-import { Education } from './components/Education';
-import { MawarisCalculator } from './components/MawarisCalculator';
-import { Portfolio } from './components/Portfolio';
-import { Contact } from './components/Contact';
-import { Footer } from './components/Footer';
 import { BackToTop } from './components/BackToTop';
 import { Toast } from './components/Toast';
+
+const Experience = lazy(() =>
+  import('./components/Experience').then((m) => ({ default: m.Experience })),
+);
+const Education = lazy(() =>
+  import('./components/Education').then((m) => ({ default: m.Education })),
+);
+const Portfolio = lazy(() =>
+  import('./components/Portfolio').then((m) => ({ default: m.Portfolio })),
+);
+const MawarisCalculator = lazy(() =>
+  import('./components/MawarisCalculator').then((m) => ({
+    default: m.MawarisCalculator,
+  })),
+);
+const Contact = lazy(() =>
+  import('./components/Contact').then((m) => ({ default: m.Contact })),
+);
+const Footer = lazy(() =>
+  import('./components/Footer').then((m) => ({ default: m.Footer })),
+);
+
+interface DeferredSectionProps {
+  id: string;
+  label: string;
+  fallbackClassName: string;
+  children: React.ReactNode;
+}
+
+const DeferredSection: React.FC<DeferredSectionProps> = ({
+  id,
+  label,
+  fallbackClassName,
+  children,
+}) => {
+  const [shouldLoad, setShouldLoad] = useState(() => {
+    if (typeof window !== 'undefined' && window.location.hash === `#${id}`) {
+      return true;
+    }
+    return false;
+  });
+  const sentinelRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (shouldLoad) return;
+
+    const handleHashOrLinkClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null;
+      const anchor = target?.closest(`a[href="#${id}"]`);
+      if (anchor) {
+        setShouldLoad(true);
+      }
+    };
+
+    const handleHashChange = () => {
+      if (window.location.hash === `#${id}`) {
+        setShouldLoad(true);
+      }
+    };
+
+    document.addEventListener('click', handleHashOrLinkClick, { passive: true });
+    window.addEventListener('hashchange', handleHashChange);
+
+    const el = sentinelRef.current;
+    if (!el || typeof IntersectionObserver === 'undefined') {
+      setShouldLoad(true);
+      return () => {
+        document.removeEventListener('click', handleHashOrLinkClick);
+        window.removeEventListener('hashchange', handleHashChange);
+      };
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setShouldLoad(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '600px 0px', threshold: 0 },
+    );
+
+    observer.observe(el);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('click', handleHashOrLinkClick);
+      window.removeEventListener('hashchange', handleHashChange);
+    };
+  }, [id, shouldLoad]);
+
+  const fallback = (
+    <section
+      ref={sentinelRef}
+      id={id}
+      className={fallbackClassName}
+      aria-label={label}
+    />
+  );
+
+  if (!shouldLoad) {
+    return fallback;
+  }
+
+  return <Suspense fallback={fallback}>{children}</Suspense>;
+};
 
 export default function App() {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -40,7 +140,7 @@ export default function App() {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen text-gray-800 dark:text-slate-100 antialiased selection:bg-brand-500 selection:text-white transition-colors duration-300">
+      <div className="min-h-screen text-gray-800 dark:text-slate-100 antialiased selection:bg-brand-700 selection:text-white transition-colors duration-300">
         {/* Top of page anchor for 100% reliable scroll-to-top */}
         <div id="page-top" className="absolute top-0 left-0 w-px h-px pointer-events-none opacity-0" aria-hidden="true" />
 
@@ -51,15 +151,35 @@ export default function App() {
         <main>
           <Hero />
           <EducationalMethod />
-          <Experience />
-          <Education />
-          <Portfolio />
-          <MawarisCalculator onShowToast={showToast} />
-          <Contact onShowToast={showToast} />
+          <Suspense fallback={<section id="pengalaman" className="min-h-[600px]" aria-label="Pengalaman Kerja" />}>
+            <Experience />
+          </Suspense>
+          <Suspense fallback={<section id="pendidikan" className="min-h-[500px]" aria-label="Riwayat Pendidikan" />}>
+            <Education />
+          </Suspense>
+          <DeferredSection
+            id="portofolio"
+            label="Portofolio & Sertifikasi"
+            fallbackClassName="py-20 bg-warmbg dark:bg-slate-950 min-h-[600px] border-t border-emerald-100/60 dark:border-slate-800"
+          >
+            <Portfolio />
+          </DeferredSection>
+          <DeferredSection
+            id="simulator"
+            label="Kalkulator Waris Syar'i"
+            fallbackClassName="py-16 md:py-20 bg-gradient-to-br from-emerald-900 via-brand-900 to-teal-950 min-h-[550px]"
+          >
+            <MawarisCalculator onShowToast={showToast} />
+          </DeferredSection>
+          <Suspense fallback={<section id="kontak" className="min-h-[500px]" aria-label="Kontak" />}>
+            <Contact onShowToast={showToast} />
+          </Suspense>
         </main>
 
         {/* Footer */}
-        <Footer />
+        <Suspense fallback={<footer className="min-h-[160px]" aria-label="Footer" />}>
+          <Footer />
+        </Suspense>
 
         {/* Floating Utilities */}
         <BackToTop />

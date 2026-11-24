@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { PROFILE_INFO } from '../data/profileData';
 import { formatPortfolioImageUrl } from '../utils/imageHelper';
 import { ThemeToggle } from './ThemeToggle';
+import { FaIcon } from './FaIcon';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -14,26 +15,28 @@ export const Navbar: React.FC = () => {
   const [logoError, setLogoError] = useState(false);
 
   const formattedLogoUrl = PROFILE_INFO.logoUrl
-    ? formatPortfolioImageUrl(PROFILE_INFO.logoUrl)
+    ? formatPortfolioImageUrl(PROFILE_INFO.logoUrl, 128)
     : '';
 
-  // Update Favicon dynamically from Google Drive or local link if specified
+  // Update Favicon dynamically from bundled local asset or custom URL
   useEffect(() => {
     const rawFavicon = PROFILE_INFO.faviconUrl || PROFILE_INFO.logoUrl;
     if (rawFavicon) {
-      const formatted = formatPortfolioImageUrl(rawFavicon);
+      const formatted = formatPortfolioImageUrl(rawFavicon, 128);
       const link =
         (document.getElementById('app-favicon') as HTMLLinkElement) ||
         (document.querySelector("link[rel*='icon']") as HTMLLinkElement);
       if (link && formatted) {
+        if (formatted.endsWith('.webp') || formatted.startsWith('data:image/webp')) {
+          link.type = 'image/webp';
+        }
         link.href = formatted;
       }
     }
   }, []);
 
-  // Scroll spy to detect active section and highlight the active menu
+  // Zero-reflow scroll spy using IntersectionObserver (avoids forced reflows on mount & scroll)
   useEffect(() => {
-    // Exact DOM order: portofolio is now placed above simulator
     const sectionIds = [
       'beranda',
       'tentang',
@@ -44,48 +47,75 @@ export const Navbar: React.FC = () => {
       'kontak',
     ];
 
-    const handleScroll = () => {
-      const scrollY = window.scrollY || document.documentElement.scrollTop || 0;
-      const windowHeight = window.innerHeight || document.documentElement.clientHeight || 0;
-      const scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight || 0;
+    const visibleSections = new Set<string>();
 
-      // If user reaches near the bottom of document (kontak, media sosial, form, footer)
-      if (windowHeight + scrollY >= scrollHeight - 120) {
+    const updateActive = () => {
+      // Prioritize bottom-most visible section along focal zone or top if at top
+      if (visibleSections.has('kontak')) {
         setActiveSection('kontak');
         return;
       }
-
-      // Focal inspection line right below the fixed navbar
-      const focalLine = 120;
-      let current = 'beranda';
-
-      for (const id of sectionIds) {
-        const el = document.getElementById(id);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          if (rect.top <= focalLine && rect.bottom > focalLine) {
-            current = id === 'tentang' ? 'beranda' : id;
-            break;
-          }
+      for (let i = sectionIds.length - 1; i >= 0; i--) {
+        const id = sectionIds[i];
+        if (visibleSections.has(id)) {
+          setActiveSection(id === 'tentang' ? 'beranda' : id);
+          return;
         }
       }
-
-      // If user has scrolled past simulator and is in kontak section
-      const kontakEl = document.getElementById('kontak');
-      if (kontakEl) {
-        const kontakRect = kontakEl.getBoundingClientRect();
-        if (kontakRect.top <= focalLine) {
-          current = 'kontak';
-        }
-      }
-
-      setActiveSection(current);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll();
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const id = entry.target.id;
+          if (!id) return;
+          if (entry.isIntersecting) {
+            visibleSections.add(id);
+          } else {
+            visibleSections.delete(id);
+          }
+        });
+        updateActive();
+      },
+      {
+        rootMargin: '-110px 0px -55% 0px',
+        threshold: 0,
+      },
+    );
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    const footerObserver = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setActiveSection('kontak');
+        }
+      },
+      { threshold: 0.1 },
+    );
+
+    const observeAll = () => {
+      sectionIds.forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) observer.observe(el);
+      });
+      const footerEl = document.querySelector('footer');
+      if (footerEl) footerObserver.observe(footerEl);
+    };
+
+    observeAll();
+    // Re-observe once lazy sections mount
+    const mutationObserver = new MutationObserver(() => {
+      observeAll();
+    });
+    const mainEl = document.querySelector('main');
+    if (mainEl) {
+      mutationObserver.observe(mainEl, { childList: true });
+    }
+
+    return () => {
+      observer.disconnect();
+      footerObserver.disconnect();
+      mutationObserver.disconnect();
+    };
   }, []);
 
   // Smooth scroll helper ensuring mobile menu close transition settles before positioning
@@ -102,7 +132,6 @@ export const Navbar: React.FC = () => {
     const performScroll = () => {
       const el = document.getElementById(sectionId);
       if (el) {
-        // Navbar height offset: 80px on desktop/tablet, 72px on mobile
         const navbarHeight = window.innerWidth < 768 ? 72 : 80;
         const targetY =
           el.getBoundingClientRect().top + window.scrollY - navbarHeight;
@@ -122,6 +151,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <nav
+      aria-label="Navigasi utama"
       className="fixed top-0 left-0 right-0 z-[100] w-full glass-card border-b border-emerald-100/60 dark:border-slate-800/80 shadow-sm transition-[background-color,border-color,box-shadow] duration-300"
       id="navbar"
     >
@@ -136,19 +166,22 @@ export const Navbar: React.FC = () => {
             {formattedLogoUrl && !logoError ? (
               <img
                 src={formattedLogoUrl}
-                alt={PROFILE_INFO.name}
+                alt={`Logo ${PROFILE_INFO.name}`}
+                width={44}
+                height={44}
+                decoding="async"
                 onError={() => setLogoError(true)}
                 className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 object-contain group-hover:scale-105 transition-transform shrink-0"
               />
             ) : (
-              <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-brand-600 to-sunshine-500 flex items-center justify-center text-white font-bold text-base lg:text-xl shadow-md group-hover:scale-105 transition-transform shrink-0">
+              <div className="w-9 h-9 sm:w-10 sm:h-10 lg:w-11 lg:h-11 rounded-xl sm:rounded-2xl bg-gradient-to-tr from-brand-700 to-sunshine-600 flex items-center justify-center text-white font-bold text-base lg:text-xl shadow-md group-hover:scale-105 transition-transform shrink-0">
                 <span className="font-arabic font-bold text-lg lg:text-2xl leading-none">
                   س
                 </span>
               </div>
             )}
             <div className="min-w-0">
-              <span className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 dark:text-white block leading-tight group-hover:text-brand-600 dark:group-hover:text-brand-400 transition-colors whitespace-nowrap">
+              <span className="text-sm sm:text-base lg:text-xl font-bold text-gray-900 dark:text-white block leading-tight group-hover:text-brand-700 dark:group-hover:text-brand-400 transition-colors whitespace-nowrap">
                 {PROFILE_INFO.name}
               </span>
               <span className="text-[10px] sm:text-[11px] lg:text-xs text-brand-700 dark:text-brand-400 font-semibold tracking-wide block whitespace-nowrap">
@@ -165,8 +198,8 @@ export const Navbar: React.FC = () => {
                 onClick={(e) => scrollToSection(e, 'beranda')}
                 className={`px-1.5 py-1 md:px-2 md:py-1.5 lg:px-3 lg:py-2 xl:px-3.5 rounded-xl transition-all duration-200 whitespace-nowrap ${
                   activeSection === 'beranda'
-                    ? 'text-brand-700 bg-brand-50/90 font-bold shadow-2xs ring-1 ring-brand-200/60 dark:text-brand-300 dark:bg-slate-800/90 dark:ring-brand-500/40'
-                    : 'text-gray-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 hover:bg-brand-50/50 dark:hover:bg-slate-800/60'
+                    ? 'text-brand-800 bg-brand-50/90 font-bold shadow-2xs ring-1 ring-brand-200/60 dark:text-brand-300 dark:bg-slate-800/90 dark:ring-brand-500/40'
+                    : 'text-gray-700 dark:text-slate-200 hover:text-brand-700 dark:hover:text-brand-300 hover:bg-brand-50/50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 Beranda
@@ -176,8 +209,8 @@ export const Navbar: React.FC = () => {
                 onClick={(e) => scrollToSection(e, 'pengalaman')}
                 className={`px-1.5 py-1 md:px-2 md:py-1.5 lg:px-3 lg:py-2 xl:px-3.5 rounded-xl transition-all duration-200 whitespace-nowrap ${
                   activeSection === 'pengalaman'
-                    ? 'text-brand-700 bg-brand-50/90 font-bold shadow-2xs ring-1 ring-brand-200/60 dark:text-brand-300 dark:bg-slate-800/90 dark:ring-brand-500/40'
-                    : 'text-gray-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 hover:bg-brand-50/50 dark:hover:bg-slate-800/60'
+                    ? 'text-brand-800 bg-brand-50/90 font-bold shadow-2xs ring-1 ring-brand-200/60 dark:text-brand-300 dark:bg-slate-800/90 dark:ring-brand-500/40'
+                    : 'text-gray-700 dark:text-slate-200 hover:text-brand-700 dark:hover:text-brand-300 hover:bg-brand-50/50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 Pengalaman
@@ -187,8 +220,8 @@ export const Navbar: React.FC = () => {
                 onClick={(e) => scrollToSection(e, 'pendidikan')}
                 className={`px-1.5 py-1 md:px-2 md:py-1.5 lg:px-3 lg:py-2 xl:px-3.5 rounded-xl transition-all duration-200 whitespace-nowrap ${
                   activeSection === 'pendidikan'
-                    ? 'text-brand-700 bg-brand-50/90 font-bold shadow-2xs ring-1 ring-brand-200/60 dark:text-brand-300 dark:bg-slate-800/90 dark:ring-brand-500/40'
-                    : 'text-gray-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 hover:bg-brand-50/50 dark:hover:bg-slate-800/60'
+                    ? 'text-brand-800 bg-brand-50/90 font-bold shadow-2xs ring-1 ring-brand-200/60 dark:text-brand-300 dark:bg-slate-800/90 dark:ring-brand-500/40'
+                    : 'text-gray-700 dark:text-slate-200 hover:text-brand-700 dark:hover:text-brand-300 hover:bg-brand-50/50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 Pendidikan
@@ -198,8 +231,8 @@ export const Navbar: React.FC = () => {
                 onClick={(e) => scrollToSection(e, 'portofolio')}
                 className={`px-1.5 py-1 md:px-2 md:py-1.5 lg:px-3 lg:py-2 xl:px-3.5 rounded-xl transition-all duration-200 whitespace-nowrap ${
                   activeSection === 'portofolio'
-                    ? 'text-brand-700 bg-brand-50/90 font-bold shadow-2xs ring-1 ring-brand-200/60 dark:text-brand-300 dark:bg-slate-800/90 dark:ring-brand-500/40'
-                    : 'text-gray-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-300 hover:bg-brand-50/50 dark:hover:bg-slate-800/60'
+                    ? 'text-brand-800 bg-brand-50/90 font-bold shadow-2xs ring-1 ring-brand-200/60 dark:text-brand-300 dark:bg-slate-800/90 dark:ring-brand-500/40'
+                    : 'text-gray-700 dark:text-slate-200 hover:text-brand-700 dark:hover:text-brand-300 hover:bg-brand-50/50 dark:hover:bg-slate-800/60'
                 }`}
               >
                 Portofolio
@@ -209,11 +242,11 @@ export const Navbar: React.FC = () => {
                 onClick={(e) => scrollToSection(e, 'simulator')}
                 className={`px-1.5 py-1 md:px-2 md:py-1.5 lg:px-3 lg:py-2 xl:px-3.5 rounded-xl transition-all duration-200 whitespace-nowrap ${
                   activeSection === 'simulator'
-                    ? 'text-white bg-gradient-to-r from-brand-600 to-emerald-600 font-bold shadow-md shadow-brand-600/25 ring-2 ring-brand-400'
-                    : 'text-brand-700 dark:text-brand-300 bg-emerald-50 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-slate-700 font-semibold'
+                    ? 'text-white bg-gradient-to-r from-brand-700 to-emerald-700 font-bold shadow-md shadow-brand-700/25 ring-2 ring-brand-400'
+                    : 'text-brand-800 dark:text-brand-300 bg-emerald-50 dark:bg-slate-800 hover:bg-emerald-100 dark:hover:bg-slate-700 font-semibold'
                 }`}
               >
-                <i className="fa-solid fa-calculator mr-1 text-[11px] lg:text-xs"></i>
+                <FaIcon name="calculator" className="mr-1 text-[11px] lg:text-xs" />
                 <span>
                   <span className="hidden xl:inline">Hitung </span>Warisan
                 </span>
@@ -228,11 +261,11 @@ export const Navbar: React.FC = () => {
                 onClick={(e) => scrollToSection(e, 'kontak')}
                 className={`px-3 py-1.5 md:px-3 md:py-1.5 lg:px-4.5 lg:py-2 rounded-full font-bold text-xs lg:text-sm shadow-md transition-all flex items-center gap-1.5 whitespace-nowrap shrink-0 ${
                   activeSection === 'kontak'
-                    ? 'bg-gradient-to-r from-brand-700 to-teal-800 text-white ring-2 ring-brand-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 shadow-lg scale-105'
-                    : 'bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-700 hover:to-brand-800 text-white hover:shadow-lg'
+                    ? 'bg-gradient-to-r from-brand-800 to-teal-900 text-white ring-2 ring-brand-400 ring-offset-2 ring-offset-white dark:ring-offset-slate-900 shadow-lg scale-105'
+                    : 'bg-gradient-to-r from-brand-700 to-brand-800 hover:from-brand-800 hover:to-brand-900 text-white hover:shadow-lg'
                 }`}
               >
-                <i className="fa-regular fa-paper-plane text-xs"></i>
+                <FaIcon name="paper-plane" className="text-xs" />
                 <span>Kontak</span>
               </a>
             </div>
@@ -244,10 +277,12 @@ export const Navbar: React.FC = () => {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="h-8.5 w-8.5 sm:h-9.5 sm:w-9.5 rounded-xl flex items-center justify-center text-gray-700 dark:text-slate-200 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-brand-50/70 dark:hover:bg-slate-800/80 transition-colors focus:outline-none"
-              aria-label="Toggle Navigation"
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
+              aria-label={mobileMenuOpen ? 'Tutup menu navigasi' : 'Buka menu navigasi'}
+              className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center text-gray-700 dark:text-slate-200 hover:text-brand-700 dark:hover:text-brand-400 hover:bg-brand-50/70 dark:hover:bg-slate-800/80 transition-colors focus-visible:outline-2 focus-visible:outline-brand-600"
             >
-              <i className={`fa-solid ${mobileMenuOpen ? 'fa-xmark' : 'fa-bars'} text-xl leading-none`}></i>
+              <FaIcon name={mobileMenuOpen ? 'xmark' : 'bars'} className="text-xl leading-none" />
             </button>
           </div>
         </div>
@@ -255,15 +290,18 @@ export const Navbar: React.FC = () => {
 
       {/* Mobile Menu Dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white/98 dark:bg-slate-900/98 backdrop-blur-lg border-b border-gray-100 dark:border-slate-800 shadow-2xl animate-in slide-in-from-top-2 duration-200">
+        <div
+          id="mobile-menu"
+          className="md:hidden bg-white/98 dark:bg-slate-900/98 backdrop-blur-lg border-b border-gray-100 dark:border-slate-800 shadow-2xl animate-in slide-in-from-top-2 duration-200"
+        >
           <div className="px-4 pt-3 pb-6 space-y-2">
             <a
               href="#beranda"
               onClick={(e) => scrollToSection(e, 'beranda')}
               className={`block px-4 py-2.5 rounded-xl font-medium transition-colors ${
                 activeSection === 'beranda'
-                  ? 'bg-brand-50 dark:bg-slate-800 text-brand-700 dark:text-brand-300 font-bold border-l-4 border-brand-600 dark:border-brand-400 pl-3'
-                  : 'text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800/60 hover:text-brand-600 dark:hover:text-brand-300'
+                  ? 'bg-brand-50 dark:bg-slate-800 text-brand-800 dark:text-brand-300 font-bold border-l-4 border-brand-700 dark:border-brand-400 pl-3'
+                  : 'text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800/60 hover:text-brand-700 dark:hover:text-brand-300'
               }`}
             >
               Beranda
@@ -273,8 +311,8 @@ export const Navbar: React.FC = () => {
               onClick={(e) => scrollToSection(e, 'pengalaman')}
               className={`block px-4 py-2.5 rounded-xl font-medium transition-colors ${
                 activeSection === 'pengalaman'
-                  ? 'bg-brand-50 dark:bg-slate-800 text-brand-700 dark:text-brand-300 font-bold border-l-4 border-brand-600 dark:border-brand-400 pl-3'
-                  : 'text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800/60 hover:text-brand-600 dark:hover:text-brand-300'
+                  ? 'bg-brand-50 dark:bg-slate-800 text-brand-800 dark:text-brand-300 font-bold border-l-4 border-brand-700 dark:border-brand-400 pl-3'
+                  : 'text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800/60 hover:text-brand-700 dark:hover:text-brand-300'
               }`}
             >
               Pengalaman
@@ -284,8 +322,8 @@ export const Navbar: React.FC = () => {
               onClick={(e) => scrollToSection(e, 'pendidikan')}
               className={`block px-4 py-2.5 rounded-xl font-medium transition-colors ${
                 activeSection === 'pendidikan'
-                  ? 'bg-brand-50 dark:bg-slate-800 text-brand-700 dark:text-brand-300 font-bold border-l-4 border-brand-600 dark:border-brand-400 pl-3'
-                  : 'text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800/60 hover:text-brand-600 dark:hover:text-brand-300'
+                  ? 'bg-brand-50 dark:bg-slate-800 text-brand-800 dark:text-brand-300 font-bold border-l-4 border-brand-700 dark:border-brand-400 pl-3'
+                  : 'text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800/60 hover:text-brand-700 dark:hover:text-brand-300'
               }`}
             >
               Pendidikan
@@ -295,8 +333,8 @@ export const Navbar: React.FC = () => {
               onClick={(e) => scrollToSection(e, 'portofolio')}
               className={`block px-4 py-2.5 rounded-xl font-medium transition-colors ${
                 activeSection === 'portofolio'
-                  ? 'bg-brand-50 dark:bg-slate-800 text-brand-700 dark:text-brand-300 font-bold border-l-4 border-brand-600 dark:border-brand-400 pl-3'
-                  : 'text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800/60 hover:text-brand-600 dark:hover:text-brand-300'
+                  ? 'bg-brand-50 dark:bg-slate-800 text-brand-800 dark:text-brand-300 font-bold border-l-4 border-brand-700 dark:border-brand-400 pl-3'
+                  : 'text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-800/60 hover:text-brand-700 dark:hover:text-brand-300'
               }`}
             >
               Portofolio
@@ -306,19 +344,19 @@ export const Navbar: React.FC = () => {
               onClick={(e) => scrollToSection(e, 'simulator')}
               className={`block px-4 py-2.5 rounded-xl font-medium transition-colors ${
                 activeSection === 'simulator'
-                  ? 'bg-emerald-600 text-white font-bold pl-3 shadow'
-                  : 'text-brand-700 dark:text-brand-300 bg-emerald-50 dark:bg-slate-800 font-semibold'
+                  ? 'bg-emerald-700 text-white font-bold pl-3 shadow'
+                  : 'text-brand-800 dark:text-brand-300 bg-emerald-50 dark:bg-slate-800 font-semibold'
               }`}
             >
-              <i className="fa-solid fa-calculator mr-2"></i> Hitung Warisan
+              <FaIcon name="calculator" className="mr-2" /> Hitung Warisan
             </a>
             <a
               href="#kontak"
               onClick={(e) => scrollToSection(e, 'kontak')}
               className={`block text-center mt-3 py-3 rounded-xl font-semibold shadow transition-all ${
                 activeSection === 'kontak'
-                  ? 'bg-brand-700 text-white ring-2 ring-brand-400'
-                  : 'bg-brand-600 text-white'
+                  ? 'bg-brand-800 text-white ring-2 ring-brand-400'
+                  : 'bg-brand-700 text-white'
               }`}
             >
               Kontak

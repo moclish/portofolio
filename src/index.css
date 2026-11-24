@@ -21,8 +21,8 @@
 
   --color-warmbg: #faf7f2;
 
-  --font-sans: "Plus Jakarta Sans", "Inter", sans-serif;
-  --font-arabic: "Amiri", serif;
+  --font-sans: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
+  --font-arabic: "Amiri", "Traditional Arabic", serif;
 }
 
 html {
@@ -35,10 +35,21 @@ html.dark {
 }
 
 body {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Plus Jakarta Sans Variable", "Plus Jakarta Sans", system-ui, -apple-system, sans-serif;
   background-color: #faf7f2;
   color: #1f2937;
   transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+/* Skip layout/paint for off-screen below-the-fold sections on initial load */
+#pengalaman,
+#pendidikan,
+#portofolio,
+#simulator,
+#kontak,
+footer {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 600px;
 }
 
 html.dark body {
@@ -82,12 +93,12 @@ html.dark .bg-pattern {
 }
 
 .swiper-pagination-bullet {
-  background: #059669 !important;
-  opacity: 0.3;
+  background: #047857 !important;
+  opacity: 0.35;
 }
 
 .swiper-pagination-bullet-active {
-  background: #059669 !important;
+  background: #047857 !important;
   opacity: 1;
   width: 24px !important;
   border-radius: 9999px !important;
@@ -220,7 +231,8 @@ html.dark #rincianAhliWarisCard .text-brand-900 {
 }
 
 html.dark #ringkasanHartaCard .text-brand-800,
-html.dark #rincianAhliWarisCard .text-brand-700 {
+html.dark #rincianAhliWarisCard .text-brand-700,
+html.dark #rincianAhliWarisCard .text-brand-800 {
   color: #6ee7b7 !important; /* emerald-300 */
 }
 
@@ -236,7 +248,8 @@ html.dark #ringkasanHartaCard div[class*="bg-rose-50"] {
   border-color: rgba(190, 18, 60, 0.4) !important;
 }
 
-html.dark #ringkasanHartaCard .text-rose-700 {
+html.dark #ringkasanHartaCard .text-rose-700,
+html.dark #ringkasanHartaCard .text-rose-800 {
   color: #fb7185 !important; /* rose-400 */
 }
 
@@ -249,7 +262,8 @@ html.dark #ringkasanHartaCard .text-emerald-950 {
   color: #a7f3d0 !important; /* emerald-200 */
 }
 
-html.dark #ringkasanHartaCard .text-emerald-700 {
+html.dark #ringkasanHartaCard .text-emerald-700,
+html.dark #ringkasanHartaCard .text-emerald-800 {
   color: #6ee7b7 !important; /* emerald-300 */
 }
 

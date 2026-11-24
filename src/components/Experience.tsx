@@ -5,19 +5,20 @@
 
 import React from 'react';
 import { EXPERIENCES } from '../data/profileData';
+import { FaIcon } from './FaIcon';
 
 export const Experience: React.FC = () => {
   return (
     <section id="pengalaman" className="py-20 bg-warmbg dark:bg-slate-950 relative scroll-mt-[5px] border-t border-emerald-100/50 dark:border-slate-800 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <span className="text-brand-600 dark:text-brand-400 font-bold text-sm uppercase tracking-wider bg-brand-50 dark:bg-slate-800 px-4 py-1.5 rounded-full border border-brand-100 dark:border-slate-700">
+          <span className="text-brand-800 dark:text-brand-300 font-bold text-sm uppercase tracking-wider bg-brand-50 dark:bg-slate-800 px-4 py-1.5 rounded-full border border-brand-200/80 dark:border-slate-700">
             Jejak Pengabdian
           </span>
           <h2 className="text-3xl sm:text-4xl font-extrabold text-gray-900 dark:text-white mt-3">
             Pengalaman Profesional
           </h2>
-          <p className="text-gray-600 dark:text-slate-300 mt-2">
+          <p className="text-gray-700 dark:text-slate-300 mt-2">
             Perjalanan profesional dalam memajukan kualitas pendidikan madrasah
           </p>
         </div>
@@ -33,22 +34,23 @@ export const Experience: React.FC = () => {
           <div className="space-y-10 sm:space-y-12">
             {EXPERIENCES.map((exp, index) => {
               const isFirst = index === 0;
-              const nodeBg = isFirst ? 'bg-brand-600' : 'bg-sunshine-500';
+              const nodeBg = isFirst ? 'bg-brand-700' : 'bg-amber-600';
               const ringColor = isFirst
                 ? 'ring-brand-100 dark:ring-brand-900/60 group-hover:ring-brand-200 dark:group-hover:ring-brand-800'
                 : 'ring-amber-100 dark:ring-amber-900/60 group-hover:ring-amber-200 dark:group-hover:ring-amber-800';
               const badgeBg = isFirst
-                ? 'bg-brand-100 dark:bg-brand-950/80 text-brand-800 dark:text-brand-300 border border-brand-200/50 dark:border-brand-800/60'
-                : 'bg-amber-100 dark:bg-amber-950/80 text-amber-800 dark:text-amber-300 border border-amber-200/50 dark:border-amber-800/60';
+                ? 'bg-brand-100 dark:bg-brand-950/80 text-brand-900 dark:text-brand-300 border border-brand-200/80 dark:border-brand-800/60'
+                : 'bg-amber-100 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60';
               const subtitleColor = isFirst
                 ? 'text-brand-700 dark:text-brand-400'
-                : 'text-amber-700 dark:text-amber-400';
+                : 'text-amber-800 dark:text-amber-400';
 
               return (
                 <div key={index} className="relative pl-10 sm:pl-14 group">
                   {/* Glowing Timeline Marker Dot */}
                   <div
                     className={`absolute left-0 sm:left-1 top-2.5 w-8 h-8 rounded-full bg-white dark:bg-slate-900 ring-4 ${ringColor} shadow-md flex items-center justify-center transition-all duration-300 group-hover:scale-115 z-10`}
+                    aria-hidden="true"
                   >
                     <div
                       className={`w-3.5 h-3.5 rounded-full ${nodeBg} transition-transform group-hover:scale-110 shadow-xs`}
@@ -61,9 +63,9 @@ export const Experience: React.FC = () => {
                       <span
                         className={`px-3.5 py-1 rounded-full ${badgeBg} text-xs font-bold flex items-center gap-1.5 shadow-2xs`}
                       >
-                        <i className="fa-regular fa-calendar"></i> {exp.period}
+                        <FaIcon name="calendar" /> {exp.period}
                       </span>
-                      <span className="text-xs text-gray-500 dark:text-slate-400 font-medium">
+                      <span className="text-xs text-gray-600 dark:text-slate-300 font-medium">
                         {exp.institution}
                       </span>
                     </div>
@@ -74,12 +76,13 @@ export const Experience: React.FC = () => {
                       {exp.subtitle}
                     </p>
 
-                    <ul className="space-y-2.5 text-gray-600 dark:text-slate-300 text-sm">
+                    <ul className="space-y-2.5 text-gray-700 dark:text-slate-300 text-sm">
                       {exp.points.map((pt, pIdx) => (
                         <li key={pIdx} className="flex items-start gap-2.5">
-                          <i
-                            className={`fa-solid fa-circle-check ${exp.bulletColorClass} mt-1 text-sm flex-shrink-0`}
-                          ></i>
+                          <FaIcon
+                            name="circle-check"
+                            className={`${exp.bulletColorClass} mt-1 text-sm flex-shrink-0`}
+                          />
                           <span className="leading-relaxed">{pt}</span>
                         </li>
                       ))}

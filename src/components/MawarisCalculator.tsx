@@ -12,6 +12,7 @@ import {
 } from "../types/mawaris";
 import { calculateMawaris } from "../utils/mawarisCalculator";
 import { parseMoney, formatRupiah } from "../utils/formatters";
+import { FaIcon, FaIconName } from "./FaIcon";
 
 interface MawarisCalculatorProps {
   onShowToast: (msg: string) => void;
@@ -647,13 +648,13 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
       <div className="absolute inset-0 opacity-10 bg-pattern"></div>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-2xl mx-auto mb-10 space-y-2.5">
-          <span className="px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold text-xs border border-emerald-400/30 uppercase tracking-wider inline-flex items-center gap-1.5">
-            <i className="fa-solid fa-calculator"></i> Tool Interaktif
+          <span className="px-4 py-1.5 rounded-full bg-emerald-500/20 text-emerald-200 font-semibold text-xs border border-emerald-400/30 uppercase tracking-wider inline-flex items-center gap-1.5">
+            <FaIcon name="calculator" /> Tool Interaktif
           </span>
           <h2 className="text-2xl sm:text-3xl font-extrabold leading-tight">
             Kalkulator Waris Syar'i
           </h2>
-          <p className="text-emerald-100/80 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto">
+          <p className="text-emerald-100 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto">
             Sistem kalkulasi waris lengkap dan komprehensif sesuai dengan syari'at islam
           </p>
         </div>
@@ -683,19 +684,19 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                   step: 1 as const,
                   mobileLabel: "Harta",
                   desktopSuffix: "",
-                  icon: "fa-coins",
+                  icon: "coins" as FaIconName,
                 },
                 {
                   step: 2 as const,
                   mobileLabel: "Pasangan",
                   desktopSuffix: " & Ortu",
-                  icon: "fa-users",
+                  icon: "users" as FaIconName,
                 },
                 {
                   step: 3 as const,
                   mobileLabel: "Keturunan",
                   desktopSuffix: "",
-                  icon: "fa-child-reaching",
+                  icon: "child-reaching" as FaIconName,
                 },
                 ...(!saudaraMahjubByAll
                   ? [
@@ -703,7 +704,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         step: 4 as const,
                         mobileLabel: "Saudara",
                         desktopSuffix: "",
-                        icon: "fa-people-roof",
+                        icon: "people-roof" as FaIconName,
                       },
                     ]
                   : []),
@@ -725,10 +726,10 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     }}
                     className={`w-full py-1.5 sm:py-2 px-1 sm:px-2 rounded-xl font-bold transition-all flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-1.5 select-none ${
                       isActive
-                        ? "bg-brand-600 dark:bg-emerald-600 text-white shadow-xs cursor-default ring-1 ring-brand-700/20"
+                        ? "bg-brand-700 dark:bg-emerald-700 text-white shadow-xs cursor-default ring-1 ring-brand-700/20"
                         : isUnlocked
-                          ? "bg-white/90 dark:bg-slate-800 text-gray-700 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 hover:text-brand-900 dark:hover:text-emerald-300 border border-emerald-100/70 dark:border-slate-700 cursor-pointer shadow-2xs active:scale-95"
-                          : "bg-gray-100/60 dark:bg-slate-800/40 text-gray-400 dark:text-slate-500 border border-gray-200/40 dark:border-slate-800 cursor-not-allowed opacity-60"
+                          ? "bg-white/90 dark:bg-slate-800 text-gray-800 dark:text-slate-200 hover:bg-white dark:hover:bg-slate-700 hover:text-brand-900 dark:hover:text-emerald-300 border border-emerald-100/70 dark:border-slate-700 cursor-pointer shadow-2xs active:scale-95"
+                          : "bg-gray-100/60 dark:bg-slate-800/40 text-gray-500 dark:text-slate-400 border border-gray-200/40 dark:border-slate-800 cursor-not-allowed opacity-70"
                     }`}
                     title={
                       !isUnlocked
@@ -739,17 +740,18 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     }
                   >
                     <div className="flex items-center gap-1 shrink-0">
-                      <i
-                        className={`fa-solid ${item.icon} text-[10px] sm:text-xs ${
+                      <FaIcon
+                        name={item.icon}
+                        className={`text-[10px] sm:text-xs ${
                           isActive
                             ? "text-white"
                             : isUnlocked
-                              ? "text-brand-600 dark:text-emerald-400"
-                              : "text-gray-400 dark:text-slate-500"
+                              ? "text-brand-700 dark:text-emerald-400"
+                              : "text-gray-500 dark:text-slate-400"
                         }`}
-                      ></i>
+                      />
                       {!isUnlocked && (
-                        <i className="fa-solid fa-lock text-[8px] sm:text-[9px] text-gray-400 dark:text-slate-500"></i>
+                        <FaIcon name="lock" className="text-[8px] sm:text-[9px] text-gray-500 dark:text-slate-400" />
                       )}
                     </div>
                     <span className="text-[10px] sm:text-xs leading-none truncate tracking-tight">
@@ -771,20 +773,20 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               <div className="space-y-4 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b pb-2 border-gray-100 dark:border-slate-800">
                   <h3 className="text-sm font-extrabold text-brand-800 dark:text-emerald-400 flex items-center gap-2">
-                    <i className="fa-solid fa-coins text-amber-500"></i>
+                    <FaIcon name="coins" className="text-amber-600 dark:text-amber-400" />
                     <span>Total Harta & Kewajiban</span>
                   </h3>
-                  <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400">
+                  <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300">
                     1 dari {saudaraMahjubByAll ? "3" : "4"}
                   </span>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-gray-800 dark:text-slate-200 mb-1">
-                    Total Harta <span className="text-rose-500">*</span>
+                  <label htmlFor="hartaKotor" className="block text-xs font-bold text-gray-800 dark:text-slate-200 mb-1">
+                    Total Harta <span className="text-rose-600 dark:text-rose-400">*</span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 font-bold text-sm">
+                    <span aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-600 dark:text-slate-400 font-bold text-sm">
                       Rp
                     </span>
                     <input
@@ -804,11 +806,11 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1">
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-600 dark:text-slate-300 mb-1">
+                    <label htmlFor="biayaJenazah" className="block text-[11px] font-semibold text-gray-700 dark:text-slate-300 mb-1">
                       Biaya Jenazah
                     </label>
                     <div className="relative">
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 font-bold text-xs pointer-events-none select-none">
+                      <span aria-hidden="true" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-600 dark:text-slate-400 font-bold text-xs pointer-events-none select-none">
                         Rp
                       </span>
                       <input
@@ -830,20 +832,20 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     </div>
                     {isBiayaJenazahHabis && (
                       <p
-                        className="text-[10px] text-red-600 dark:text-red-400 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
+                        className="text-[10px] text-red-700 dark:text-red-400 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
                         title="Tidak ada harta yang tersisa"
                       >
-                        <i className="fa-solid fa-triangle-exclamation text-[9px] shrink-0"></i>
+                        <FaIcon name="triangle-exclamation" className="text-[9px] shrink-0" />
                         <span className="truncate">Tidak ada harta yang tersisa</span>
                       </p>
                     )}
                   </div>
                   <div>
-                    <label className="block text-[11px] font-semibold text-gray-600 dark:text-slate-300 mb-1">
+                    <label htmlFor="hutang" className="block text-[11px] font-semibold text-gray-700 dark:text-slate-300 mb-1">
                       Hutang Mayit
                     </label>
                     <div className="relative">
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 font-bold text-xs pointer-events-none select-none">
+                      <span aria-hidden="true" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-600 dark:text-slate-400 font-bold text-xs pointer-events-none select-none">
                         Rp
                       </span>
                       <input
@@ -865,25 +867,25 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     </div>
                     {isHutangHabis && (
                       <p
-                        className="text-[10px] text-red-600 dark:text-red-400 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
+                        className="text-[10px] text-red-700 dark:text-red-400 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
                         title="Tidak ada harta yang tersisa"
                       >
-                        <i className="fa-solid fa-triangle-exclamation text-[9px] shrink-0"></i>
+                        <FaIcon name="triangle-exclamation" className="text-[9px] shrink-0" />
                         <span className="truncate">Tidak ada harta yang tersisa</span>
                       </p>
                     )}
                   </div>
                   <div>
                     <div className="flex items-center justify-between mb-1">
-                      <label className="block text-[11px] font-semibold text-gray-600 dark:text-slate-300 truncate">
-                        Wasiat <span className="text-gray-400 dark:text-slate-500 font-normal">(Maksimal 1/3)</span>
+                      <label htmlFor="wasiat" className="block text-[11px] font-semibold text-gray-700 dark:text-slate-300 truncate">
+                        Wasiat <span className="text-gray-600 dark:text-slate-400 font-normal">(Maksimal 1/3)</span>
                       </label>
                       {wasiatNum > 0 && (
                         <span
                           className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded transition-colors ${
                             sisaSebelumWasiat === 0 || !isWasiatValid
-                              ? "text-red-600 dark:text-red-300 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800"
-                              : "text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800"
+                              ? "text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800"
+                              : "text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 border border-emerald-200 dark:border-emerald-800"
                           }`}
                           title={
                             !isWasiatValid
@@ -900,7 +902,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       )}
                     </div>
                     <div className="relative">
-                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 dark:text-slate-500 font-bold text-xs pointer-events-none select-none">
+                      <span aria-hidden="true" className="absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-600 dark:text-slate-400 font-bold text-xs pointer-events-none select-none">
                         Rp
                       </span>
                       <input
@@ -922,14 +924,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     </div>
                     {isWasiatOverLimit && (
                       <p
-                        className="text-[10px] text-red-600 dark:text-red-400 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
+                        className="text-[10px] text-red-700 dark:text-red-400 font-semibold mt-1 leading-tight flex items-center gap-1 animate-in fade-in"
                         title={
                           sisaSebelumWasiat > 0
                             ? `Batas syar'i maksimal 1/3: Rp ${Math.floor(maxWasiat).toLocaleString("id-ID")}`
                             : "Tidak ada harta yang tersisa"
                         }
                       >
-                        <i className="fa-solid fa-triangle-exclamation text-[9px] shrink-0"></i>
+                        <FaIcon name="triangle-exclamation" className="text-[9px] shrink-0" />
                         <span className="truncate">
                           {sisaSebelumWasiat > 0
                             ? `Maksimal 1/3: (Rp ${Math.floor(maxWasiat).toLocaleString("id-ID")})`
@@ -947,10 +949,10 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               <div className="space-y-4 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b pb-2 border-gray-100 dark:border-slate-800">
                   <h3 className="text-sm font-extrabold text-brand-800 dark:text-emerald-400 flex items-center gap-2">
-                    <i className="fa-solid fa-users text-brand-600 dark:text-emerald-400"></i>
+                    <FaIcon name="users" className="text-brand-700 dark:text-emerald-400" />
                     <span>Pasangan & Orang Tua</span>
                   </h3>
-                  <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400">
+                  <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300">
                     2 dari {saudaraMahjubByAll ? "3" : "4"}
                   </span>
                 </div>
@@ -964,7 +966,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     }`}
                   >
                     <div>
-                      <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
+                      <label htmlFor="statusPasangan" className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
                         Yang Meninggal
                       </label>
                       <select
@@ -989,21 +991,22 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
 
                     {statusPasangan === "istri" && (
                       <div className="animate-in fade-in duration-200">
-                        <label className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
+                        <span className="block text-xs font-bold text-gray-700 dark:text-slate-300 mb-1">
                           Jumlah Istri
-                        </label>
+                        </span>
                         <div className="h-11 px-3 py-1.5 bg-warmbg dark:bg-slate-800/80 rounded-xl border border-gray-200/80 dark:border-slate-700 flex items-center justify-between">
                           <div className="min-w-0 pr-1">
                             <span className="block text-xs font-bold text-gray-800 dark:text-white leading-tight truncate">
                               {jmlIstri} Orang
                             </span>
-                            <span className="text-[10px] text-gray-500 dark:text-slate-400 leading-tight block truncate">
+                            <span className="text-[10px] text-gray-600 dark:text-slate-300 leading-tight block truncate">
                               1/4 atau 1/8
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5 shrink-0">
                             <button
                               type="button"
+                              aria-label="Kurangi jumlah istri"
                               onClick={() => stepNumber(setJmlIstri, -1, 1, 4)}
                               className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer flex items-center justify-center active:scale-95 transition-transform"
                             >
@@ -1014,6 +1017,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             </span>
                             <button
                               type="button"
+                              aria-label="Tambah jumlah istri"
                               onClick={() => stepNumber(setJmlIstri, 1, 1, 4)}
                               className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer flex items-center justify-center active:scale-95 transition-transform"
                             >
@@ -1027,9 +1031,9 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     {statusPasangan === "suami" && (
                       <div className="animate-in fade-in duration-200">
                         <div className="flex items-center justify-between mb-1">
-                          <label className="block text-xs font-bold text-gray-700 dark:text-slate-300">
+                          <span className="block text-xs font-bold text-gray-700 dark:text-slate-300">
                             Jumlah Suami
-                          </label>
+                          </span>
                           <span className="text-[10px] font-semibold text-emerald-800 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/70 px-1.5 py-0.5 rounded border border-emerald-200 dark:border-emerald-800">
                             Maksimal 1
                           </span>
@@ -1039,7 +1043,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <span className="block text-xs font-bold text-gray-800 dark:text-white leading-tight truncate">
                               1 Orang
                             </span>
-                            <span className="text-[10px] text-gray-500 dark:text-slate-400 leading-tight block truncate">
+                            <span className="text-[10px] text-gray-600 dark:text-slate-300 leading-tight block truncate">
                               1/2 atau 1/4
                             </span>
                           </div>
@@ -1047,7 +1051,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <button
                               type="button"
                               disabled
-                              className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 font-bold text-sm text-gray-400 dark:text-slate-600 cursor-not-allowed flex items-center justify-center select-none"
+                              className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 font-bold text-sm text-gray-500 dark:text-slate-500 cursor-not-allowed flex items-center justify-center select-none"
                               title="Jumlah suami tetap 1 orang (syariat tidak membolehkan poliandri)"
                               aria-label="Kurangi jumlah suami (disabled)"
                             >
@@ -1059,7 +1063,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <button
                               type="button"
                               disabled
-                              className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 font-bold text-sm text-gray-400 dark:text-slate-600 cursor-not-allowed flex items-center justify-center select-none"
+                              className="w-7 h-7 rounded-lg bg-gray-100 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 font-bold text-sm text-gray-500 dark:text-slate-500 cursor-not-allowed flex items-center justify-center select-none"
                               title="Jumlah suami tetap 1 orang (syariat tidak membolehkan poliandri)"
                               aria-label="Tambah jumlah suami (disabled)"
                             >
@@ -1073,9 +1077,9 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
 
                   {/* Orang Tua (Kakek & Nenek hanya tampil jika TIDAK terhalang) */}
                   <div className="space-y-2 pt-1">
-                    <label className="block text-xs font-bold text-gray-700 dark:text-slate-300">
+                    <span className="block text-xs font-bold text-gray-700 dark:text-slate-300">
                       Orang Tua & Leluhur yang Masih Hidup:
-                    </label>
+                    </span>
                     <div className="grid grid-cols-2 gap-2.5">
                       <label
                         className={`flex items-center gap-2 p-2.5 rounded-xl border cursor-pointer transition-all ${
@@ -1160,7 +1164,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             onClick={() => setMazhabKakek("jumhur")}
                             className={`flex-1 py-1 px-2 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
                               mazhabKakek === "jumhur"
-                                ? "bg-brand-600 dark:bg-emerald-600 text-white shadow-xs"
+                                ? "bg-brand-700 dark:bg-emerald-700 text-white shadow-xs"
                                 : "bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-slate-600"
                             }`}
                           >
@@ -1171,7 +1175,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             onClick={() => setMazhabKakek("hanafi")}
                             className={`flex-1 py-1 px-2 rounded-lg text-[11px] font-bold cursor-pointer transition-all ${
                               mazhabKakek === "hanafi"
-                                ? "bg-brand-600 dark:bg-emerald-600 text-white shadow-xs"
+                                ? "bg-brand-700 dark:bg-emerald-700 text-white shadow-xs"
                                 : "bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 border border-gray-200 dark:border-slate-600"
                             }`}
                           >
@@ -1190,16 +1194,16 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               <div className="space-y-4 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b pb-2 border-gray-100 dark:border-slate-800">
                   <h3 className="text-sm font-extrabold text-brand-800 dark:text-emerald-400 flex items-center gap-2">
-                    <i className="fa-solid fa-child-reaching text-blue-600 dark:text-blue-400"></i>
+                    <FaIcon name="child-reaching" className="text-blue-700 dark:text-blue-400" />
                     <span>Anak & Keturunan Kandung</span>
                   </h3>
-                  <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400">
+                  <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300">
                     3 dari {saudaraMahjubByAll ? "3" : "4"}
                   </span>
                 </div>
 
                 <div className="p-2.5 bg-blue-50/70 dark:bg-blue-950/40 rounded-xl border border-blue-100 dark:border-blue-900/50 text-[11px] text-blue-900 dark:text-blue-200 leading-relaxed flex items-start gap-2">
-                  <i className="fa-solid fa-circle-info text-blue-600 dark:text-blue-400 mt-0.5 shrink-0"></i>
+                  <FaIcon name="circle-info" className="text-blue-700 dark:text-blue-400 mt-0.5 shrink-0" />
                   <span>
                     Hanya anak kandung mayit yang berhak mendapat jatah waris, anak tiri dan anak angkat bukanlah ahli waris syar'i.
                   </span>
@@ -1212,13 +1216,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         <span className="block text-xs font-bold text-gray-900 dark:text-white">
                           Anak Laki-Laki
                         </span>
-                        <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                        <span className="text-[10px] text-gray-600 dark:text-slate-300">
                           'Asabah Binafsihi
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
+                          aria-label="Kurangi jumlah anak laki-laki"
                           onClick={() => stepNumber(setAnakLaki, -1, 0, 99)}
                           className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
                         >
@@ -1229,6 +1234,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         </span>
                         <button
                           type="button"
+                          aria-label="Tambah jumlah anak laki-laki"
                           onClick={() => stepNumber(setAnakLaki, 1, 0, 99)}
                           className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
                         >
@@ -1242,13 +1248,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         <span className="block text-xs font-bold text-gray-900 dark:text-white">
                           Anak Perempuan
                         </span>
-                        <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                        <span className="text-[10px] text-gray-600 dark:text-slate-300">
                           1/2, 2/3, atau 'Asabah
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
+                          aria-label="Kurangi jumlah anak perempuan"
                           onClick={() =>
                             stepNumber(setAnakPerempuan, -1, 0, 99)
                           }
@@ -1261,6 +1268,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         </span>
                         <button
                           type="button"
+                          aria-label="Tambah jumlah anak perempuan"
                           onClick={() => stepNumber(setAnakPerempuan, 1, 0, 99)}
                           className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
                         >
@@ -1282,13 +1290,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <span className="block text-xs font-bold text-gray-900 dark:text-white">
                               Cucu Laki-Laki
                             </span>
-                            <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                            <span className="text-[10px] text-gray-600 dark:text-slate-300">
                               dr Anak Laki-Laki
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
+                              aria-label="Kurangi jumlah cucu laki-laki"
                               onClick={() => stepNumber(setCucuLaki, -1, 0, 99)}
                               className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
                             >
@@ -1299,6 +1308,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             </span>
                             <button
                               type="button"
+                              aria-label="Tambah jumlah cucu laki-laki"
                               onClick={() => stepNumber(setCucuLaki, 1, 0, 99)}
                               className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
                             >
@@ -1312,13 +1322,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <span className="block text-xs font-bold text-gray-900 dark:text-white">
                               Cucu Perempuan
                             </span>
-                            <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                            <span className="text-[10px] text-gray-600 dark:text-slate-300">
                               dr Anak Laki-Laki
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
+                              aria-label="Kurangi jumlah cucu perempuan"
                               onClick={() =>
                                 stepNumber(setCucuPerempuan, -1, 0, 99)
                               }
@@ -1331,6 +1342,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             </span>
                             <button
                               type="button"
+                              aria-label="Tambah jumlah cucu perempuan"
                               onClick={() =>
                                 stepNumber(setCucuPerempuan, 1, 0, 99)
                               }
@@ -1352,10 +1364,10 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               <div className="space-y-4 animate-in fade-in duration-200">
                 <div className="flex items-center justify-between border-b pb-2 border-gray-100 dark:border-slate-800">
                   <h3 className="text-sm font-extrabold text-brand-800 dark:text-emerald-400 flex items-center gap-2">
-                    <i className="fa-solid fa-people-roof text-purple-600 dark:text-purple-400"></i>
+                    <FaIcon name="people-roof" className="text-purple-700 dark:text-purple-400" />
                     <span>Saudara, Paman & Kerabat</span>
                   </h3>
-                  <span className="text-[10px] font-bold text-gray-500 dark:text-slate-400">
+                  <span className="text-[10px] font-bold text-gray-600 dark:text-slate-300">
                     4 dari 4
                   </span>
                 </div>
@@ -1372,13 +1384,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                           <span className="block text-xs font-bold text-gray-900 dark:text-white">
                             Sdr Laki Kandung
                           </span>
-                          <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                          <span className="text-[10px] text-gray-600 dark:text-slate-300">
                             'Asabah
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
+                            aria-label="Kurangi jumlah saudara laki-laki kandung"
                             onClick={() =>
                               stepNumber(setSdraLakiKandung, -1, 0, 99)
                             }
@@ -1391,6 +1404,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                           </span>
                           <button
                             type="button"
+                            aria-label="Tambah jumlah saudara laki-laki kandung"
                             onClick={() =>
                               stepNumber(setSdraLakiKandung, 1, 0, 99)
                             }
@@ -1406,13 +1420,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                           <span className="block text-xs font-bold text-gray-900 dark:text-white">
                             Sdr Pr Kandung
                           </span>
-                          <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                          <span className="text-[10px] text-gray-600 dark:text-slate-300">
                             1/2, 2/3, atau 'Asabah
                           </span>
                         </div>
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
+                            aria-label="Kurangi jumlah saudara perempuan kandung"
                             onClick={() =>
                               stepNumber(setSdraPerempuanKandung, -1, 0, 99)
                             }
@@ -1425,6 +1440,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                           </span>
                           <button
                             type="button"
+                            aria-label="Tambah jumlah saudara perempuan kandung"
                             onClick={() =>
                               stepNumber(setSdraPerempuanKandung, 1, 0, 99)
                             }
@@ -1449,13 +1465,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <span className="block text-xs font-bold text-gray-900 dark:text-white">
                               Sdr Laki Seayah
                             </span>
-                            <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                            <span className="text-[10px] text-gray-600 dark:text-slate-300">
                               'Asabah
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
+                              aria-label="Kurangi jumlah saudara laki-laki seayah"
                               onClick={() =>
                                 stepNumber(setSdraLakiSeayah, -1, 0, 99)
                               }
@@ -1468,10 +1485,11 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             </span>
                             <button
                               type="button"
+                              aria-label="Tambah jumlah saudara laki-laki seayah"
                               onClick={() =>
                                 stepNumber(setSdraLakiSeayah, 1, 0, 99)
                               }
-                              className="w-7 h-7 rounded-lg bg-white border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
+                              className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
                             >
                               +
                             </button>
@@ -1483,13 +1501,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <span className="block text-xs font-bold text-gray-900 dark:text-white">
                               Sdr Pr Seayah
                             </span>
-                            <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                            <span className="text-[10px] text-gray-600 dark:text-slate-300">
                               1/6, 1/2, 2/3, atau 'Asabah
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
+                              aria-label="Kurangi jumlah saudara perempuan seayah"
                               onClick={() =>
                                 stepNumber(setSdraPerempuanSeayah, -1, 0, 99)
                               }
@@ -1502,10 +1521,11 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             </span>
                             <button
                               type="button"
+                              aria-label="Tambah jumlah saudara perempuan seayah"
                               onClick={() =>
                                 stepNumber(setSdraPerempuanSeayah, 1, 0, 99)
                               }
-                              className="w-7 h-7 rounded-lg bg-white border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
+                              className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
                             >
                               +
                             </button>
@@ -1522,13 +1542,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         <span className="block text-xs font-bold text-gray-900 dark:text-white">
                           Saudara / Saudari Seibu
                         </span>
-                        <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                        <span className="text-[10px] text-gray-600 dark:text-slate-300">
                           1/6 (sendiri) atau 1/3 (2+ orang)
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
                           type="button"
+                          aria-label="Kurangi jumlah saudara seibu"
                           onClick={() => stepNumber(setSdraSeibu, -1, 0, 99)}
                           className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
                         >
@@ -1539,6 +1560,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         </span>
                         <button
                           type="button"
+                          aria-label="Tambah jumlah saudara seibu"
                           onClick={() => stepNumber(setSdraSeibu, 1, 0, 99)}
                           className="w-7 h-7 rounded-lg bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 font-bold text-sm text-gray-700 dark:text-slate-200 hover:bg-gray-100 dark:hover:bg-slate-600 cursor-pointer"
                         >
@@ -1560,13 +1582,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <span className="block text-xs font-bold text-gray-900 dark:text-white">
                               Keponakan Kandung
                             </span>
-                            <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                            <span className="text-[10px] text-gray-600 dark:text-slate-300">
                               dr Sdr Laki Kandung ('Asabah)
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
+                              aria-label="Kurangi jumlah keponakan laki-laki kandung"
                               onClick={() =>
                                 stepNumber(setKeponakanLakiKandung, -1, 0, 99)
                               }
@@ -1579,6 +1602,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             </span>
                             <button
                               type="button"
+                              aria-label="Tambah jumlah keponakan laki-laki kandung"
                               onClick={() =>
                                 stepNumber(setKeponakanLakiKandung, 1, 0, 99)
                               }
@@ -1595,13 +1619,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                               <span className="block text-xs font-bold text-gray-900 dark:text-white">
                                 Keponakan Seayah
                               </span>
-                              <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                              <span className="text-[10px] text-gray-600 dark:text-slate-300">
                                 dr Sdr Laki Seayah ('Asabah)
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
+                                aria-label="Kurangi jumlah keponakan laki-laki seayah"
                                 onClick={() =>
                                   stepNumber(setKeponakanLakiSeayah, -1, 0, 99)
                                 }
@@ -1614,6 +1639,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                               </span>
                               <button
                                 type="button"
+                                aria-label="Tambah jumlah keponakan laki-laki seayah"
                                 onClick={() =>
                                   stepNumber(setKeponakanLakiSeayah, 1, 0, 99)
                                 }
@@ -1640,13 +1666,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <span className="block text-xs font-bold text-gray-900 dark:text-white">
                               Paman Kandung
                             </span>
-                            <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                            <span className="text-[10px] text-gray-600 dark:text-slate-300">
                               Sdr Laki Kandung Ayah ('Asabah)
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
+                              aria-label="Kurangi jumlah paman kandung"
                               onClick={() =>
                                 stepNumber(setPamanKandung, -1, 0, 99)
                               }
@@ -1659,6 +1686,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             </span>
                             <button
                               type="button"
+                              aria-label="Tambah jumlah paman kandung"
                               onClick={() =>
                                 stepNumber(setPamanKandung, 1, 0, 99)
                               }
@@ -1675,13 +1703,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                               <span className="block text-xs font-bold text-gray-900 dark:text-white">
                                 Paman Seayah
                               </span>
-                              <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                              <span className="text-[10px] text-gray-600 dark:text-slate-300">
                                 Sdr Laki Seayah Ayah ('Asabah)
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
+                                aria-label="Kurangi jumlah paman seayah"
                                 onClick={() =>
                                   stepNumber(setPamanSeayah, -1, 0, 99)
                                 }
@@ -1694,6 +1723,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                               </span>
                               <button
                                 type="button"
+                                aria-label="Tambah jumlah paman seayah"
                                 onClick={() =>
                                   stepNumber(setPamanSeayah, 1, 0, 99)
                                 }
@@ -1720,13 +1750,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             <span className="block text-xs font-bold text-gray-900 dark:text-white">
                               Sepupu Laki Kandung
                             </span>
-                            <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                            <span className="text-[10px] text-gray-600 dark:text-slate-300">
                               dr Paman Kandung ('Asabah)
                             </span>
                           </div>
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
+                              aria-label="Kurangi jumlah sepupu laki-laki kandung"
                               onClick={() =>
                                 stepNumber(setSepupuLakiKandung, -1, 0, 99)
                               }
@@ -1739,6 +1770,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                             </span>
                             <button
                               type="button"
+                              aria-label="Tambah jumlah sepupu laki-laki kandung"
                               onClick={() =>
                                 stepNumber(setSepupuLakiKandung, 1, 0, 99)
                               }
@@ -1755,13 +1787,14 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                               <span className="block text-xs font-bold text-gray-900 dark:text-white">
                                 Sepupu Laki Seayah
                               </span>
-                              <span className="text-[10px] text-gray-500 dark:text-slate-400">
+                              <span className="text-[10px] text-gray-600 dark:text-slate-300">
                                 dr Paman Seayah ('Asabah)
                               </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
+                                aria-label="Kurangi jumlah sepupu laki-laki seayah"
                                 onClick={() =>
                                   stepNumber(setSepupuLakiSeayah, -1, 0, 99)
                                 }
@@ -1774,6 +1807,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                               </span>
                               <button
                                 type="button"
+                                aria-label="Tambah jumlah sepupu laki-laki seayah"
                                 onClick={() =>
                                   stepNumber(setSepupuLakiSeayah, 1, 0, 99)
                                 }
@@ -1796,7 +1830,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               <div className="p-3 bg-gradient-to-r from-amber-50/90 to-orange-50/70 dark:from-amber-950/40 dark:to-orange-950/30 rounded-2xl border border-amber-200/80 dark:border-amber-800/70 space-y-2 animate-in fade-in duration-300">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold text-amber-900 dark:text-amber-300 flex items-center gap-1.5">
-                    <i className="fa-solid fa-shield-halved text-amber-600 dark:text-amber-400"></i>
+                    <FaIcon name="shield-halved" className="text-amber-700 dark:text-amber-400" />
                     <span>
                       ({activeMahjubAlerts.length}) Orang/Kelompok Terhalang:
                     </span>
@@ -1813,7 +1847,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       <strong className="font-bold text-gray-900 dark:text-white">
                         {item.target}
                       </strong>
-                      <span className="text-gray-500 dark:text-slate-400 text-[10px]">
+                      <span className="text-gray-600 dark:text-slate-300 text-[10px]">
                         terhalang oleh
                       </span>
                       <span className="font-bold text-brand-800 dark:text-emerald-400">
@@ -1840,12 +1874,12 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     }}
                     className={`w-full py-3 rounded-2xl font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md ${
                       isStep1Valid
-                        ? "bg-brand-600 dark:bg-emerald-600 hover:bg-brand-700 dark:hover:bg-emerald-500 text-white cursor-pointer active:scale-[0.99]"
-                        : "bg-gray-100 dark:bg-slate-800 text-gray-400 dark:text-slate-600 cursor-not-allowed border border-gray-200 dark:border-slate-700"
+                        ? "bg-brand-700 dark:bg-emerald-700 hover:bg-brand-800 dark:hover:bg-emerald-600 text-white cursor-pointer active:scale-[0.99]"
+                        : "bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-slate-400 cursor-not-allowed border border-gray-200 dark:border-slate-700"
                     }`}
                   >
                     <span>Selanjutnya</span>
-                    <i className="fa-solid fa-arrow-right text-xs"></i>
+                    <FaIcon name="arrow-right" className="text-xs" />
                   </button>
                 </div>
               )}
@@ -1867,7 +1901,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       );
                       setCurrentStep(3);
                     }}
-                    className="flex-1 py-2.5 rounded-xl bg-brand-600 dark:bg-emerald-600 hover:bg-brand-700 dark:hover:bg-emerald-500 text-white font-bold text-xs shadow-md cursor-pointer"
+                    className="flex-1 py-2.5 rounded-xl bg-brand-700 dark:bg-emerald-700 hover:bg-brand-800 dark:hover:bg-emerald-600 text-white font-bold text-xs shadow-md cursor-pointer"
                   >
                     Lanjut ke Keturunan →
                   </button>
@@ -1888,7 +1922,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       type="button"
                       disabled={isCalculating}
                       onClick={handleHitungClick}
-                      className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-600 via-emerald-600 to-teal-700 hover:from-brand-700 hover:to-emerald-700 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-80 disabled:cursor-wait transition-all active:scale-[0.99]"
+                      className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-brand-700 via-emerald-700 to-teal-800 hover:from-brand-800 hover:to-emerald-800 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-80 disabled:cursor-wait transition-all active:scale-[0.99]"
                     >
                       {isCalculating ? (
                         <>
@@ -1906,11 +1940,10 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                                 : "Hitung Ulang"
                               : "Selesai & Lihat Hasil"}
                           </span>
-                          <i
-                            className={`fa-solid ${
-                              showResults ? "fa-rotate" : "fa-calculator"
-                            } text-[10px]`}
-                          ></i>
+                          <FaIcon
+                            name={showResults ? "rotate" : "calculator"}
+                            className="text-[10px]"
+                          />
                         </>
                       )}
                     </button>
@@ -1923,7 +1956,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                         );
                         setCurrentStep(4);
                       }}
-                      className="flex-1 py-2.5 rounded-xl bg-brand-600 dark:bg-emerald-600 hover:bg-brand-700 dark:hover:bg-emerald-500 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1"
+                      className="flex-1 py-2.5 rounded-xl bg-brand-700 dark:bg-emerald-700 hover:bg-brand-800 dark:hover:bg-emerald-600 text-white font-bold text-xs shadow-md cursor-pointer flex items-center justify-center gap-1"
                     >
                       <span>Lanjut ke Saudara →</span>
                     </button>
@@ -1944,7 +1977,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     type="button"
                     disabled={isCalculating}
                     onClick={handleHitungClick}
-                    className="flex-1 py-3 rounded-xl bg-gradient-to-r from-brand-600 via-emerald-600 to-teal-700 hover:from-brand-700 hover:to-emerald-700 text-white font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-wait transition-all active:scale-[0.99]"
+                    className="flex-1 py-3 rounded-xl bg-gradient-to-r from-brand-700 via-emerald-700 to-teal-800 hover:from-brand-800 hover:to-emerald-800 text-white font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg cursor-pointer flex items-center justify-center gap-2 disabled:opacity-80 disabled:cursor-wait transition-all active:scale-[0.99]"
                   >
                     {isCalculating ? (
                       <>
@@ -1962,11 +1995,10 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                               : "Hitung Ulang & Lihat Hasil"
                             : "Selesai & Lihat Hasil"}
                         </span>
-                        <i
-                          className={`fa-solid ${
-                            showResults ? "fa-rotate" : "fa-calculator"
-                          } text-xs`}
-                        ></i>
+                        <FaIcon
+                          name={showResults ? "rotate" : "calculator"}
+                          className="text-xs"
+                        />
                       </>
                     )}
                   </button>
@@ -1987,18 +2019,19 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               {isDirtyAfterCalc && (
                 <div className="p-3 sm:p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/40 rounded-2xl border border-amber-300 dark:border-amber-800/80 flex items-center justify-between gap-2.5 sm:gap-3 text-amber-950 dark:text-amber-100 shadow-xs animate-in fade-in duration-300">
                   <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
-                    <div className="w-7 h-7 rounded-xl bg-amber-100 dark:bg-amber-900/60 border border-amber-200/80 dark:border-amber-700/80 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
-                      <i
-                        className={`fa-solid fa-circle-exclamation text-xs ${
-                          isCalculating ? "animate-pulse text-amber-600 dark:text-amber-400" : ""
+                    <div className="w-7 h-7 rounded-xl bg-amber-100 dark:bg-amber-900/60 border border-amber-200/80 dark:border-amber-700/80 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0">
+                      <FaIcon
+                        name="circle-exclamation"
+                        className={`text-xs ${
+                          isCalculating ? "animate-pulse text-amber-700 dark:text-amber-400" : ""
                         }`}
-                      ></i>
+                      />
                     </div>
                     <div className="min-w-0 leading-tight sm:leading-normal">
                       <span className="block sm:inline text-xs font-bold text-amber-950 dark:text-amber-200">
                         Data berubah.
                       </span>{" "}
-                      <span className="block sm:inline text-[11px] sm:text-xs text-amber-900/90 dark:text-amber-300/90 font-medium sm:font-bold">
+                      <span className="block sm:inline text-[11px] sm:text-xs text-amber-900 dark:text-amber-200 font-medium sm:font-bold">
                         Hasil belum diperbarui.
                       </span>
                     </div>
@@ -2009,8 +2042,8 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     onClick={handleHitungClick}
                     className={`px-3 sm:px-3.5 py-2 rounded-xl text-white font-extrabold text-xs shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 transition-all ${
                       isCalculating
-                        ? "bg-brand-700 dark:bg-emerald-700 opacity-90 cursor-wait scale-95"
-                        : "bg-brand-600 dark:bg-emerald-600 hover:bg-brand-700 dark:hover:bg-emerald-500 active:scale-95 hover:shadow-md"
+                        ? "bg-brand-800 dark:bg-emerald-800 opacity-90 cursor-wait scale-95"
+                        : "bg-brand-700 dark:bg-emerald-700 hover:bg-brand-800 dark:hover:bg-emerald-600 active:scale-95 hover:shadow-md"
                     }`}
                   >
                     {isCalculating ? (
@@ -2020,7 +2053,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       </>
                     ) : (
                       <>
-                        <i className="fa-solid fa-arrows-rotate text-[11px]"></i>
+                        <FaIcon name="arrows-rotate" className="text-[11px]" />
                         <span>Perbarui</span>
                       </>
                     )}
@@ -2032,8 +2065,8 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               {activeCalculation.kasusKhusus && (
                 <div className="p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/50 dark:to-orange-950/40 rounded-3xl border border-amber-200 dark:border-amber-800/80 text-gray-900 dark:text-amber-100 shadow-md">
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="w-6 h-6 rounded-full bg-amber-500 dark:bg-amber-600 text-white flex items-center justify-center text-xs">
-                      <i className="fa-solid fa-star"></i>
+                    <span className="w-6 h-6 rounded-full bg-amber-700 dark:bg-amber-600 text-white flex items-center justify-center text-xs">
+                      <FaIcon name="star" />
                     </span>
                     <strong className="text-xs font-extrabold text-amber-900 dark:text-amber-300">
                       {activeCalculation.kasusKhusus}
@@ -2041,7 +2074,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                   </div>
                   {activeCalculation.penjelasanSyari &&
                     activeCalculation.penjelasanSyari.length > 0 && (
-                      <p className="text-[11px] text-amber-900/90 dark:text-amber-200/90 leading-relaxed mt-1">
+                      <p className="text-[11px] text-amber-900 dark:text-amber-200 leading-relaxed mt-1">
                         {activeCalculation.penjelasanSyari[0]}
                       </p>
                     )}
@@ -2059,8 +2092,8 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
               >
                 <div className="flex items-center justify-between border-b pb-2.5 border-gray-100 dark:border-slate-800 gap-2">
                   <h3 className="text-sm sm:text-base font-extrabold text-brand-900 dark:text-emerald-400 flex items-center gap-2">
-                    <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-transparent dark:border-emerald-800/60 flex items-center justify-center text-xs sm:text-sm">
-                      <i className="fa-solid fa-file-invoice-dollar"></i>
+                    <span className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border border-transparent dark:border-emerald-800/60 flex items-center justify-center text-xs sm:text-sm">
+                      <FaIcon name="file-invoice-dollar" />
                     </span>
                     <span>Ringkasan Harta</span>
                   </h3>
@@ -2068,13 +2101,13 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     id="statusFaroidBadge"
                     className={`text-[11px] sm:text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap transition-colors flex items-center gap-1.5 ${
                       justUpdated
-                        ? "bg-emerald-100 dark:bg-emerald-900/80 text-emerald-800 dark:text-emerald-200 ring-1 ring-emerald-400"
-                        : "bg-brand-100 dark:bg-slate-800 text-brand-800 dark:text-emerald-300 border border-transparent dark:border-slate-700"
+                        ? "bg-emerald-100 dark:bg-emerald-900/80 text-emerald-900 dark:text-emerald-200 ring-1 ring-emerald-400"
+                        : "bg-brand-100 dark:bg-slate-800 text-brand-900 dark:text-emerald-300 border border-transparent dark:border-slate-700"
                     }`}
                   >
                     {justUpdated ? (
                       <>
-                        <i className="fa-solid fa-check text-emerald-600 dark:text-emerald-400 text-[10px]"></i>
+                        <FaIcon name="check" className="text-emerald-700 dark:text-emerald-400 text-[10px]" />
                         <span>Hasil Diperbarui</span>
                       </>
                     ) : (
@@ -2086,7 +2119,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                 {/* Clean 2-column mobile dashboard grid */}
                 <div className="grid grid-cols-2 gap-2 sm:gap-3 text-xs">
                   <div className="p-2.5 sm:p-3 bg-gray-50/80 dark:bg-slate-800/80 rounded-2xl border border-gray-100 dark:border-slate-700/70">
-                    <span className="block text-[10px] sm:text-[11px] text-gray-500 dark:text-slate-400 font-medium">
+                    <span className="block text-[10px] sm:text-[11px] text-gray-600 dark:text-slate-300 font-medium">
                       Harta Kotor
                     </span>
                     <strong
@@ -2099,12 +2132,12 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
 
                   <div className="p-2.5 sm:p-3 bg-rose-50/60 dark:bg-rose-950/30 rounded-2xl border border-rose-100 dark:border-rose-900/40">
                     <div className="flex items-center justify-between">
-                      <span className="block text-[10px] sm:text-[11px] text-rose-700 dark:text-rose-300 font-medium">
+                      <span className="block text-[10px] sm:text-[11px] text-rose-800 dark:text-rose-300 font-medium">
                         Kewajiban
                       </span>
                       {activeCalculation.wasiatIsCapped && (
                         <span
-                          className="text-[8px] bg-rose-200/80 dark:bg-rose-900/70 text-rose-800 dark:text-rose-200 font-bold px-1 rounded"
+                          className="text-[8px] bg-rose-200/80 dark:bg-rose-900/70 text-rose-900 dark:text-rose-200 font-bold px-1 rounded"
                           title="Wasiat syar'i maksimal 1/3 dari harta setelah hutang"
                         >
                           Maks 1/3
@@ -2113,7 +2146,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                     </div>
                     <strong
                       id="dispKewajiban"
-                      className="block text-xs sm:text-sm text-rose-700 dark:text-rose-400 font-mono font-bold mt-0.5 truncate"
+                      className="block text-xs sm:text-sm text-rose-800 dark:text-rose-400 font-mono font-bold mt-0.5 truncate"
                     >
                       - {formatRupiah(activeCalculation.kewajibanTotal)}
                     </strong>
@@ -2124,7 +2157,7 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                       <span className="block text-[11px] sm:text-xs font-bold text-emerald-950 dark:text-emerald-200">
                         Harta Bersih (Tarakah)
                       </span>
-                      <span className="text-[10px] text-emerald-700/80 dark:text-emerald-400/80 hidden sm:block">
+                      <span className="text-[10px] text-emerald-800 dark:text-emerald-300 hidden sm:block">
                         Siap dibagikan kepada ahli waris
                       </span>
                     </div>
@@ -2138,17 +2171,17 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                 </div>
 
                 {activeCalculation.asalMasalah && (
-                  <div className="pt-0.5 flex items-center justify-between text-[11px] text-gray-500 dark:text-slate-400 font-medium px-1">
+                  <div className="pt-0.5 flex items-center justify-between text-[11px] text-gray-600 dark:text-slate-300 font-medium px-1">
                     <span>Asal Masalah:</span>
                     <span className="font-mono font-bold text-gray-800 dark:text-slate-200">
                       {activeCalculation.asalMasalah}
                       {activeCalculation.aulMasalah && (
-                        <span className="text-amber-700 dark:text-amber-400 font-semibold ml-1">
+                        <span className="text-amber-800 dark:text-amber-400 font-semibold ml-1">
                           (Ber-'Aul: {activeCalculation.aulMasalah})
                         </span>
                       )}
                       {activeCalculation.tashihMasalah && (
-                        <span className="text-brand-700 dark:text-emerald-400 font-semibold ml-1">
+                        <span className="text-brand-800 dark:text-emerald-400 font-semibold ml-1">
                           (Tashih: {activeCalculation.tashihMasalah})
                         </span>
                       )}
@@ -2167,9 +2200,9 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                 }`}
               >
                 <div className="flex items-center justify-between border-b pb-2.5 border-gray-100 dark:border-slate-800">
-                  <h4 className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white flex items-center gap-1.5">
+                  <h3 className="text-xs sm:text-sm font-extrabold text-gray-900 dark:text-white flex items-center gap-1.5">
                     <span>Rincian Bagian Ahli Waris</span>
-                  </h4>
+                  </h3>
                   <span
                     className="text-[11px] sm:text-xs bg-emerald-50 dark:bg-emerald-950/70 text-brand-800 dark:text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60"
                     id="totalPersenTerbagi"
@@ -2183,8 +2216,8 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                   className="space-y-2 sm:space-y-2.5 max-h-[460px] overflow-y-auto pr-0.5 sm:pr-1"
                 >
                   {activeCalculation.results.length === 0 ? (
-                    <div className="text-center py-6 text-xs text-gray-500 dark:text-slate-400">
-                      <i className="fa-solid fa-circle-info text-amber-500 dark:text-amber-400 mb-1 block text-base"></i>
+                    <div className="text-center py-6 text-xs text-gray-600 dark:text-slate-300">
+                      <FaIcon name="circle-info" className="text-amber-600 dark:text-amber-400 mb-1 block text-base mx-auto" />
                       Tidak ada ahli waris yang berhak menerima warisan atau
                       data belum lengkap.
                     </div>
@@ -2207,19 +2240,19 @@ export const MawarisCalculator: React.FC<MawarisCalculatorProps> = ({
                                 {r.name}
                               </strong>
                               {r.jenisBagian && (
-                                <span className="text-[9px] px-1.5 py-0.5 bg-white/90 dark:bg-slate-900/90 text-gray-600 dark:text-slate-300 font-semibold rounded border border-gray-200 dark:border-slate-700">
+                                <span className="text-[9px] px-1.5 py-0.5 bg-white/90 dark:bg-slate-900/90 text-gray-700 dark:text-slate-300 font-semibold rounded border border-gray-200 dark:border-slate-700">
                                   {r.jenisBagian}
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-brand-700 dark:text-emerald-400 font-medium flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            <div className="text-[11px] text-brand-800 dark:text-emerald-300 font-medium flex items-center gap-1.5 mt-0.5 flex-wrap">
                               <span>{r.ket}</span>
-                              <span className="text-gray-400 dark:text-slate-500">•</span>
-                              <span className="font-semibold text-emerald-800 dark:text-emerald-300">{r.pct}%</span>
+                              <span className="text-gray-500 dark:text-slate-400">•</span>
+                              <span className="font-semibold text-emerald-900 dark:text-emerald-300">{r.pct}%</span>
                               {r.saham && (
                                 <>
-                                  <span className="text-gray-400 dark:text-slate-500">•</span>
-                                  <span className="text-gray-500 dark:text-slate-400 font-mono text-[10px]">
+                                  <span className="text-gray-500 dark:text-slate-400">•</span>
+                                  <span className="text-gray-600 dark:text-slate-300 font-mono text-[10px]">
                                     Saham: {r.saham}
                                   </span>
                                 </>
